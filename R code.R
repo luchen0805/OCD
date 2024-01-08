@@ -5,10 +5,14 @@ library(tidyverse)
 require("tidyverse") # cannot continue unless you have installed this package
 
 ## 1.4 hw
-# install TineyTex
+# install TinyTex
 if(!requireNamespace("tinytex", quietly = TRUE)) install.packages("tinytex")
 tinytex::install_tinytex()
 library(tinytex)
+
+# install Tinylabels
+install.packages("tinylabels")
+library(tinylabels)
 
 # install papaja
 # install latest CRAN release
