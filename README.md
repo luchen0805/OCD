@@ -14,25 +14,3 @@ I plan to use this dataset to answer the following proposed research questions.
 2. Does the family history of OCD contribute to the development of the OCD disorder?
 3. Are patients previously diagnosed with other disorders more likely to develop OCD?
 
-**# A hypothetical file tree**
-
-file_tree <- "
-/OCD
-|-- R/
-|   |-- R code.R
-|-- data/
-|   |-- ocd_patient_dataset.csv
-|-- docs/
-|   |-- README.md
-|-- plots/
-|   |-- OCD patients information analysis/
-|       |-- plot1.png
-|       |-- plot2.png
-|-- results/
-|   |-- OCD patients information analysis results.txt
-|-- tests/
-|   |-- test_script1.R
-|   |-- test_script2.R
-|-- .gitignore
-|-- OCD.Rproj
-"
