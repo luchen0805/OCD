@@ -8,7 +8,7 @@ The dataset is about the mixed information for OCD patients. It collects informa
 
 I plan to use this dataset to answer the following proposed research questions.
 
-**_## Potential research questions proposed_**
+**##_Potential research questions proposed_**
 
 1. Is there a significant difference in the prevalence of OCD among individuals with varying levels of education?
 2. Does the family history of OCD contribute to the development of the OCD disorder?
