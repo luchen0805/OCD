@@ -1,3 +1,6 @@
+# Ignore localonly directory
+/localonly/
+
 # History files
 .Rhistory
 .Rapp.history
