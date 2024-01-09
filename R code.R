@@ -1,22 +1,18 @@
 ## 1.4 in class
 # install tidyverse
-install.packages("tidyverse")
+options(repos=c(CRAN="https://cran.rstudio.com"))
 library(tidyverse)
 require("tidyverse") # cannot continue unless you have installed this package
 
 ## 1.4 hw
 # install TinyTex
-if(!requireNamespace("tinytex", quietly = TRUE)) install.packages("tinytex")
-tinytex::install_tinytex()
 library(tinytex)
 
 # install Tinylabels
-install.packages("tinylabels")
 library(tinylabels)
 
 # install papaja
 # install latest CRAN release
-install.packages("papaja")
 library(papaja)
 # install remotes package if necessary
 if(!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")
@@ -24,11 +20,9 @@ if(!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")
 remotes::install_github("crsh/papaja")
 
 # install ggplot for data visualization
-install.packages("ggplot2")
 library(ggplot2)
 
 # install readrR for reading data from different types of files
-install.packages("readr")
 library(readr)
 
 # assign numeric variable
