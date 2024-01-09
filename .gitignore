@@ -1,9 +1,3 @@
-# Ignore localonly directory
-/localonly/
-
-# One specific file that is not in an ignored folder and is not an ignored filetype
-/iCloud Drive/Desktop/UChicago/Winter 2024/MAPS 30550/OCD
-
 # History files
 .Rhistory
 .Rapp.history
