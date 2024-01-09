@@ -13,4 +13,3 @@ I plan to use this dataset to answer the following proposed research questions.
 1. Is there a significant difference in the prevalence of OCD among individuals with varying levels of education?
 2. Does the family history of OCD contribute to the development of the OCD disorder?
 3. Are patients previously diagnosed with other disorders more likely to develop OCD?
-
