@@ -16,6 +16,7 @@ I plan to use this dataset to answer the following proposed research questions.
 
 # **Hypothetical file tree**
 
+```{r}  
 |-- R  
 |   |-- R code.R   
 |-- data  
