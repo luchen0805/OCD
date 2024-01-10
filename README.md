@@ -18,19 +18,19 @@ I plan to use this dataset to answer the following proposed research questions.
 
 OCD  
 -- R  
-   -- R code.R  
+    -- R code.R  
 -- data  
-   -- ocd_patient_dataset.csv  
+    -- ocd_patient_dataset.csv  
 -- docs  
-   -- README.md  
+    -- README.md  
 -- plots  
-   -- OCD patients information analysis  
+    -- OCD patients information analysis  
       -- plot1.png  
       -- plot2.png  
 -- results  
-   -- OCD patients information analysis results.txt  
+    -- OCD patients information analysis results.txt  
 -- tests  
-   -- test_script1.R  
-   -- test_script2.R  
+    -- test_script1.R  
+    -- test_script2.R  
 -- .gitignore  
 -- OCD.Rproj  
