@@ -47,3 +47,13 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# A dedicated directory called localonly
+/localonly/
+
+# All files that want on the computer but don't want to upload to GitHub
+*.local
+*.tmp
+
+# One specific file that is not in an ignored folder and is not an ignored filetype
+iCloud Drive/Desktop/UChicago/Winter 2024/MAPS 30550/OCD/Notebook-with-papaja.pdf
