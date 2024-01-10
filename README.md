@@ -16,21 +16,21 @@ I plan to use this dataset to answer the following proposed research questions.
 
 # **Hypothetical file tree**
 
-OCD  
--- R  
-    -- R code.R  
--- data  
-    -- ocd_patient_dataset.csv  
--- docs  
+OCD
+-- R/  
+   -- R code.R  
+-- data/  
+   -- ocd_patient_dataset.csv  
+-- docs/  
     -- README.md  
--- plots  
+-- plots/  
     -- OCD patients information analysis  
       -- plot1.png  
       -- plot2.png  
--- results  
+-- results/  
     -- OCD patients information analysis results.txt  
--- tests  
+-- tests/  
     -- test_script1.R  
     -- test_script2.R  
--- .gitignore  
--- OCD.Rproj  
+-- .gitignore/  
+-- OCD.Rproj/  
