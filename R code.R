@@ -46,3 +46,47 @@ data <- data.frame(
 )
 # check and print the dataframe
 print(data)
+
+# create a hello_world function
+helloworld <- function(name) {
+  # Print a greeting based on `name`
+  paste0("Hello", name, "!")
+}
+
+# example demo from class
+# if there are eggs
+eggs <- TRUE
+# number of milk for buying
+n.milk <- ifelse(eggs == TRUE, yes = 6, no = 1)
+
+shop2 <- function(milk, eggs) {
+  if (milk == TRUE && eggs == TRUE) {
+    n.milk <- 3
+  } else if (milk == FALSE && eggs == TRUE) {
+    n.milk <- 0
+  } else if (milk == TRUE && eggs == FALSE) {
+    n.milk <- 1
+  } else {
+    n.milk <- 0
+  }
+  return(n.milk)
+} # shop2(FALSE, FALSE) will return n.milk value of 0
+
+# assignment 4
+# create a hello_world function
+snow <- TRUE
+hello_world <- function(day, weather) {
+  if (day == "Tuesday" && weather == TRUE) {
+    "I will take the bus to the school."
+  } else if (day == "Tuesday" && weather == FALSE) {
+    "I will walk to school."
+  } else if (day != "Tuesday" && weather == TRUE) {
+    "I will stay at home."
+  } else {
+    "I will do grocery shopping."
+  }
+}
+hello_world(day = "Tuesday", weather = TRUE)
+hello_world(day = "Tuesday", weather = FALSE)
+hello_world(day = "Monday", weather = TRUE)
+hello_world(day = "Monday", weather = FALSE)
