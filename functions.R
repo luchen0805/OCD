@@ -1,4 +1,3 @@
-options(repos=c(CRAN="https://cran.rstudio.com"))
 # create a hello_world function
 snow <- TRUE
 
