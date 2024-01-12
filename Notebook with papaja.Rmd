@@ -1,22 +1,11 @@
 ---
-title             : "OCD Patient Analysis"
+title             : "Prevalence of OCD in different patient groups"
+short title       : "OCD patients information analysis"
 
 author: 
   - name          : "Luchen Yu"
     affiliation   : "University of Chicago"
-    corresponding : yes    # Define only one corresponding author
-    address       : "Postal address"
-    email         : "my@email.com"
-    role: # Contributorship roles (e.g., CRediT, https://credit.niso.org/)
-      - "Conceptualization"
-      - "Writing - Original Draft Preparation"
-      - "Writing - Review & Editing"
-
-affiliation:
-  - id            : "1"
-    institution   : "Wilhelm-Wundt-University"
-  - id            : "2"
-    institution   : "Konstanz Business School"
+    email         : "ylc23@uchicago.edu"
 
 authornote: |
   Add complete departmental affiliations for each author here. Each new line herein must be indented, like this line.
@@ -55,8 +44,13 @@ output            : papaja::apa6_pdf
 ```{r setup, include = FALSE}
 # load papaja package
 library("papaja")
-source("R code.R",local=knitr::knit_global())
+source("R code.R",local = knitr::knit_global())
 r_refs("r-references.bib")
+```
+
+```{r helloworld, include = FALSE}
+# call hello_world function
+source("functions.R", local = knitr::knit_global())
 ```
 
 ```{r analysis-preferences}
@@ -65,29 +59,44 @@ set.seed(42)
 knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 ```
 
+# **Introduction**
 
+<!-- Ordered list -->
+I will analyze these three research questions below.  
+1. Is there a significant difference in the prevalence of OCD among individuals with varying levels of education?  
+2. Does the family history of OCD contribute to the development of the OCD disorder?  
+3. Are patients previously diagnosed with other disorders more likely to develop OCD?
 
-# Methods
-We report how we determined our sample size, all data exclusions (if any), all manipulations, and all measures in the study. <!-- 21-word solution (Simmons, Nelson & Simonsohn, 2012; retrieved from http://ssrn.com/abstract=2160588) -->
+<!-- Unordered list -->
+I will analyze from three aspects.  
+* Association of education level with prevalence of OCD.  
+* Association of family history of OCD with prevalence of OCD.  
+* Association of previously diagnosed disorders with prevalence of OCD.  
 
-## Participants
+<!-- Linked URL -->
+[My GitHub](https://github.com/luchen0805/OCD)
 
-## Material
+# **Methods**
 
-## Procedure
-
-## Data analysis
+# **Data analysis**
 We used `r cite_r("r-references.bib")` for all our analyses.
 
+## ***Association of education level with prevalence of OCD***
 
-# Results
+### Is there a significant difference
 
-# Discussion
+## ***Association of family history of OCD with prevalence of OCD***
+
+## ***Impact of previously diagonsed disorders on prevalence of OCD***
+
+# **Results**
+
+# **Discussion**
 
 
 \newpage
 
-# References
+# **References**
 
 ::: {#refs custom-style="Bibliography"}
 :::
