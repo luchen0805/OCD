@@ -17,3 +17,10 @@ hello_world(day = "Tuesday", weather = TRUE) # Tuesday and snow
 hello_world(day = "Tuesday", weather = FALSE) # Tuesday and no snow
 hello_world(day = "Monday", weather = TRUE) # not Tuesday and snow
 hello_world(day = "Monday", weather = FALSE) # not Tuesday and no snow
+
+# create a while loop
+i <- 1
+while (i <= 9) { # while i is equal to and smaller than 8
+  print(i)
+  i <- i+2 # add 2 to the value of i
+}
