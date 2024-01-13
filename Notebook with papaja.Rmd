@@ -7,11 +7,6 @@ author:
     affiliation   : "University of Chicago"
     email         : "ylc23@uchicago.edu"
 
-authornote: |
-  Add complete departmental affiliations for each author here. Each new line herein must be indented, like this line.
-
-  Enter author note here.
-
 abstract: |
   One or two sentences providing a **basic introduction** to the field,  comprehensible to a scientist in any discipline.
   Two to three sentences of **more detailed background**, comprehensible  to scientists in related disciplines.
