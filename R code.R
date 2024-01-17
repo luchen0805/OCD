@@ -99,3 +99,43 @@ while (i <= 9) { # while i is equal to and smaller than 8
   print(i)
   i <- i+2 # add 2 to the value of i
 }
+
+## 1.16 in class
+# clone d2m-2024 repo
+# find excel spreadsheet
+library(readxl)
+mmdata <- read_excel("iCloud Drive/Desktop/UChicago/Winter 2024/MAPS 30550/OCD")
+read_excel("MM Data.xlsx")
+# what about this file creates problems when you read-in & how would you fix the issue
+# escape row 1?
+# magrittr %>% is used to create some data/change it with function X/Y...
+# tidy transformation dplyr (filter(), select(), arrange(), mutate(), group_by(), summarize())
+
+## assignment 6
+# load readr package
+library(readr)
+# read in the dataset
+OCD.data <- read.csv("ocd_patient_dataset.csv")
+OCD.data
+# examine the dataset
+str(OCD.data)
+# each column is either a character or numeric number
+# each row is a single observation for one patient
+# each cell is a single measurement
+# for research questions about the association of the prevalence of OCD with education level, family history of OCD, and previously diagnosed disorders,
+# only the column "Education Level", "Family History of OCD", and "Previous Diagnoses" are needed, all the other columns are extraneous
+# create an intermediate dataset
+# choose specific columns that are related to my research questions
+library(dplyr)
+filter(OCD.data, Education.Level == "High School" & Family.History.of.OCD == "Yes" & Previous.Diagnoses == "None")
+filter(OCD.data, Education.Level == "Some College" & Family.History.of.OCD == "Yes" & Previous.Diagnoses == "None")
+filter(OCD.data, Education.Level == "College Degree" & Family.History.of.OCD == "Yes" & Previous.Diagnoses == "None")
+filter(OCD.data, Education.Level == "Graduate Degree" & Family.History.of.OCD == "Yes" & Previous.Diagnoses == "None")
+# select only the columns I need
+select(OCD.data, Education.Level, Family.History.of.OCD, Previous.Diagnoses)
+# intermediate dataset for High school educated patients with family history of OCD and does not be diagnosed with other disorders before
+intermediate.OCD.data <- OCD.data %>%
+  select(Education.Level, Family.History.of.OCD, Previous.Diagnoses) %>%
+  filter(Education.Level == "High School" & Family.History.of.OCD == "Yes" & Previous.Diagnoses == "None")
+csv_file_path <- "intermediate_ocd_data.csv"
+write.csv(intermediate.OCD.data, csv_file_path)
