@@ -48,6 +48,44 @@ r_refs("r-references.bib")
 source("functions.R", local = knitr::knit_global())
 ```
 
+```{r read OCDdata}
+# load readr package
+library(readr)
+
+# read in the dataset
+OCD.data <- read.csv("ocd_patient_dataset.csv")
+
+# examine the dataset
+str(OCD.data)
+
+# each column is either a character or numeric number
+# each row is a single observation for one patient
+# each cell is a single measurement
+# for research questions about the association of the prevalence of OCD with education level, family history of OCD, and previously diagnosed disorders, only the column "Education Level", "Family History of OCD", and "Previous Diagnoses" are needed, all the other columns are extraneous
+```
+
+```{r intermediate OCDdata}
+# create an intermediate dataset
+# select specific columns that are related to my research questions
+library(dplyr)
+select(OCD.data, Education.Level, Family.History.of.OCD, Previous.Diagnoses)
+
+# keep rows based on certain column values
+# High school as education level, has family history of OCD, and does not be previously diagnosed
+filter(OCD.data, Education.Level == "High School" & Family.History.of.OCD == "Yes" & Previous.Diagnoses == "None")
+
+# combine the two
+# intermediate dataset for High school educated patients with family history of OCD and does not be diagnosed with other disorders before
+intermediate.OCD.data <- OCD.data %>%
+  select(Education.Level, Family.History.of.OCD, Previous.Diagnoses) %>%
+  filter(Education.Level == "High School" & Family.History.of.OCD == "Yes" & Previous.Diagnoses == "None")
+
+# write into csv filetype
+csv_file_path <- "intermediate_ocd_data.csv"
+write.csv(intermediate.OCD.data, csv_file_path)
+```
+
+
 ```{r analysis-preferences}
 # Seed for random number generation
 set.seed(42)
