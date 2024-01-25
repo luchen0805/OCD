@@ -17,9 +17,7 @@ str(sw.wrangled.goal)
 
 ## Use the built-in starwars dataset to replicate the tibble above in a tbl called sw.wrangled
 # If you get stuck, use comments to "hold space" for where you know code needs to go to achieve a goal you're not sure how to execute
-sw.wranged <- starwars
-
-transform <- sw.wranged %>%
+sw.wrangled <- starwars %>%
   select(-skin_color, -eye_color, -birth_year, -sex, -films, -vehicles, -starships) %>% # delete the columns "skin_color", "eye_color", "birth_year", "sex", "films", "vehicles", "starships"
   separate(name, into = c("first_name", "last_name"), sep = " ", extra = "merge") %>% # separate "name" column into "first name" column and "last name" column
   mutate(initials = paste0(substr(first_name, 1, 1), substr(last_name, 1, 1))) %>% # add one column for "initials"
@@ -60,4 +58,4 @@ transform <- sw.wranged %>%
 
 ## Check that your sw.wrangled df is identical to the goal df
 # Use any returned information about mismatches to adjust your code as needed
-all.equal(sw.wrangled.goal, sw.wrangled.goal)
+all.equal(sw.wrangled, sw.wrangled.goal)
