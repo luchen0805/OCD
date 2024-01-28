@@ -7,15 +7,6 @@ author:
     affiliation   : "University of Chicago"
     email         : "ylc23@uchicago.edu"
 
-abstract: |
-  One or two sentences providing a **basic introduction** to the field,  comprehensible to a scientist in any discipline.
-  Two to three sentences of **more detailed background**, comprehensible  to scientists in related disciplines.
-  One sentence clearly stating the **general problem** being addressed by  this particular study.
-  One sentence summarizing the main result (with the words "**here we show**" or their equivalent).
-  Two or three sentences explaining what the **main result** reveals in direct comparison to what was thought to be the case previously, or how the  main result adds to previous knowledge.
-  One or two sentences to put the results into a more **general context**.
-  Two or three sentences to provide a **broader perspective**, readily comprehensible to a scientist in any discipline.
-  
   <!-- https://tinyurl.com/ybremelq -->
   
 keywords          : "keywords"
@@ -85,6 +76,14 @@ csv_file_path <- "intermediate_ocd_data.csv"
 write.csv(intermediate.OCD.data, csv_file_path)
 ```
 
+```{r plots plan}
+# For the first plot, I plan to create a bar plot for the prevalence of OCD among individuals with 4 education level groups, to address the first research question "Is there a significant difference in the prevalence of OCD among individuals with varying levels of education?". And then I will use ANOVA/t-test to assess whether the differences in OCD prevalence across education levels are statistically significant. To create the plot, I will use the Education Level column to calculate the percentage of individuals within each education level group. Each education level group has a corresponding bar, and the height of the bar represents the prevalence of OCD in that group. X-axis is for education level groups; Y-axis is for prevalence of OCD.
+
+# For the second plot, I plan to create a pie chart for the distribution of individuals with and without a family history of OCD, to address the second research question "Does the family history of OCD contribute to the development of the OCD disorder?". And then I will use logistic regression/chi-square test to assess the statistical significance of the association. To create the plot, I will use the Family history of OCD column to calculate the percentage of individuals in either group. Then, proportion is represented by the area in the chart.
+
+# For the third plot, I plan to create a pie chart for the distribution of individuals with and without a history of other disorders, to address the research question "Are patients previously diagnosed with other disorders more likely to develop OCD?". And then I will use logistic regression/chi-square test to assess the statistical significance of the association. To create the plot, I will use the Previous diagnoses column to calculate the percentage of individuals in either group. Then, proportion is represented by the area in the chart.
+```
+
 
 ```{r analysis-preferences}
 # Seed for random number generation
@@ -93,6 +92,8 @@ knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
 ```
 
 # **Introduction**
+
+
 
 <!-- Ordered list -->
 I will analyze these three research questions below.  
