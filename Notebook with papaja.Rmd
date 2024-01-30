@@ -77,11 +77,33 @@ write.csv(intermediate.OCD.data, csv_file_path)
 ```
 
 ```{r plots plan}
-# For the first plot, I plan to create a bar plot for the prevalence of OCD among individuals with 4 education level groups, to address the first research question "Is there a significant difference in the prevalence of OCD among individuals with varying levels of education?". And then I will use ANOVA/t-test to assess whether the differences in OCD prevalence across education levels are statistically significant. To create the plot, I will use the Education Level column to calculate the percentage of individuals within each education level group. Each education level group has a corresponding bar, and the height of the bar represents the prevalence of OCD in that group. X-axis is for education level groups; Y-axis is for prevalence of OCD.
+## For the first plot, I plan to create a bar plot for the prevalence of OCD among individuals with 4 education level groups, to address the first research question "Is there a significant difference in the prevalence of OCD among individuals with varying levels of education?". And then I will use ANOVA/t-test to assess whether the differences in OCD prevalence across education levels are statistically significant. To create the plot, I will use the Education Level column to calculate the percentage of individuals within each education level group. Each education level group has a corresponding bar, and the height of the bar represents the prevalence of OCD in that group. X-axis is for education level groups; Y-axis is for prevalence of OCD.
+library(ggplot2)
+ggplot(data, aes(x = Education.Level)) +
+  geom_bar()
+# from today's class, this bar plot is meaningless, i will calculate the frequency and consider to use a boxplot
 
-# For the second plot, I plan to create a pie chart for the distribution of individuals with and without a family history of OCD, to address the second research question "Does the family history of OCD contribute to the development of the OCD disorder?". And then I will use logistic regression/chi-square test to assess the statistical significance of the association. To create the plot, I will use the Family history of OCD column to calculate the percentage of individuals in either group. Then, proportion is represented by the area in the chart.
+# calculate frequency of each education level
+education_table <- table(data$Education.Level)
+education_table
 
-# For the third plot, I plan to create a pie chart for the distribution of individuals with and without a history of other disorders, to address the research question "Are patients previously diagnosed with other disorders more likely to develop OCD?". And then I will use logistic regression/chi-square test to assess the statistical significance of the association. To create the plot, I will use the Previous diagnoses column to calculate the percentage of individuals in either group. Then, proportion is represented by the area in the chart.
+# calculate proportion of each education level
+proportion_education_level <- prop.table(education_table)
+proportion_education_level
+
+## For the second plot, I plan to create a pie chart for the distribution of individuals with and without a family history of OCD, to address the second research question "Does the family history of OCD contribute to the development of the OCD disorder?". And then I will use logistic regression/chi-square test to assess the statistical significance of the association. To create the plot, I will use the Family history of OCD column to calculate the percentage of individuals in either group. Then, proportion is represented by the area in the chart.
+
+# calculate frequency of with/without family history
+family_history_table <- table(data$Family.History.of.OCD)
+family_history_table
+
+# calculate proportion
+proportion_family_history <- prop.table(family_history_table)
+proportion_family_history
+
+# draw
+pie(proportion_family_history, labels = data$Family.History.of.OCD, main = "Family history of OCD distribution")
+
 ```
 
 
