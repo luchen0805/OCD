@@ -59,3 +59,112 @@ sw.wrangled <- starwars %>%
 ## Check that your sw.wrangled df is identical to the goal df
 # Use any returned information about mismatches to adjust your code as needed
 all.equal(sw.wrangled, sw.wrangled.goal)
+
+# Assignment 11 part 1: recreate three plots
+library(ggplot2)
+
+# recreate dataset code from answer
+sw.wrangled2 <- starwars %>% 
+  # Select only needed columns & rename height (to height_cm) and hair_color (to hair)
+  select(name, height_cm = height, mass, hair = hair_color, gender, species, homeworld) %>% 
+  # Filter out any rows where height data is missing
+  filter(!is.na(height_cm)) %>% 
+  # Break names into two columns (first_name, last_name); use first space " " as delimiter
+  ## too_many="merge": if more than one delim (space) is found, merge everything after the space into the second column
+  ## too_few="align_start": if less than one delim is found, treat the name like a first name and make last_name NA
+  ## notice where in the column order the new columns appear vs if you did this with a mutate 
+  separate_wider_delim(name, delim=" ", names = c("first_name", "last_name"), too_many="merge", too_few = "align_start") %>% 
+  # Change categorical variables (but currently character) to factors
+  mutate(
+    ## for the 2 detected levels of gender (feminine, masculine) relabel (i.e., rename/replace those values) with f & m
+    gender = factor(gender, levels = c("feminine", "masculine"), labels = c("f", "m")),
+    ## convert character values in species to all upper case before creating factor levels
+    species = factor(str_to_upper(species)),
+    homeworld = factor(homeworld)) %>% 
+  # create a second height column by converting cm to inches
+  mutate(height_in = height_cm*.3937) %>% 
+  # where there is no value in hair, use value "bald"
+  mutate(hair = factor(replace_na(hair, "bald"))) %>% 
+  # create a logical variable that returns true if "brown" is anywhere in the string value for hair 
+  mutate(brown_hair = str_detect(hair, "brown")) %>% 
+  # create an initials column by concatenating the first characters of the first and last name
+  ## str_sub(colname, 1, 1) -- the '1,1' bit means the first character to include is the one in position 1
+  ## and the last is in position 1 (so just the first character)
+  mutate(initials = paste0(str_sub(first_name, 1, 1), str_sub(last_name, 1, 1))) %>% 
+  # move the new height_in column to be immediately left of the height_cm column 
+  relocate(height_in, .before = height_cm) %>% 
+  # move the new initials column to be immediately right of the last_name column
+  relocate(initials, .after = last_name) %>% 
+  # sort by last_name and then (when last_name matches) by first_name 
+  arrange(last_name, first_name)
+
+# this recreated dataset is a little different from mine
+
+# plot 1
+# check stats for height_cm
+summary(sw.wrangled$height_cm)
+
+# from my recreated dataset
+ggplot(sw.wrangled) + 
+  geom_histogram(aes(x = height_cm), binwidth = 10) + 
+  labs(x = "height_cm", y = "count") +
+  coord_cartesian(ylim = c(0,20)) +
+  scale_y_continuous(breaks = seq(0,20, by = 5)) +
+  coord_cartesian(xlim = c(50,275)) +
+  scale_x_continuous(breaks = seq(50, 275, by = 50)) +
+  theme_minimal()
+
+# based on the recreated dataset given from answer
+ggplot(sw.wrangled2) + 
+  geom_histogram(aes(x = height_cm), binwidth = 10) + 
+  labs(x = "height_cm", y = "count") +
+  coord_cartesian(ylim = c(0,20)) +
+  scale_y_continuous(breaks = seq(0,20, by = 5)) +
+  coord_cartesian(xlim = c(50,275)) +
+  scale_x_continuous(breaks = seq(50, 275, by = 50)) +
+  theme_minimal()
+
+# plot 2
+# based on my recreated dataset
+sw.wrangled %>%
+  filter(!is.na(hair)) %>%
+  group_by(hair) %>%
+  ggplot(aes(x = forcats::fct_infreq(hair))) + 
+  geom_bar() + 
+  labs(x = "sorted_hair")
+
+# based on the recreated dataset given from the answer
+sw.wrangled2 %>%
+  filter(!is.na(hair)) %>%
+  group_by(hair) %>%
+  ggplot(aes(x = forcats::fct_infreq(hair))) + 
+  geom_bar() + 
+  labs(x = "sorted_hair")
+# this bar plot is exactly the same from the given plot 2
+
+# plot 3
+# based on my recreated dataset
+sw.wrangled %>%
+  filter(!is.na(height_in)) %>%
+  filter(!is.na(mass)) %>%
+  filter(mass < 160) %>%
+  ggplot(aes(x = height_in, y = mass)) + 
+  geom_point(shape = 17, size = 2) + 
+  coord_cartesian(ylim = c(0,160)) +
+  scale_y_continuous(breaks = seq(0,160, by = 40)) +
+  coord_cartesian(xlim = c(20,90)) +
+  scale_x_continuous(breaks = seq(20, 90, by = 20)) + 
+  theme_minimal()
+
+# based on the recreated dataset given from the answer
+sw.wrangled2 %>%
+  filter(!is.na(height_in)) %>%
+  filter(!is.na(mass)) %>%
+  filter(mass < 160) %>%
+  ggplot(aes(x = height_in, y = mass)) + 
+  geom_point(shape = 17, size = 2) + 
+  coord_cartesian(ylim = c(0,160)) +
+  scale_y_continuous(breaks = seq(0,160, by = 40)) +
+  coord_cartesian(xlim = c(20,90)) +
+  scale_x_continuous(breaks = seq(20, 90, by = 20)) + 
+  theme_minimal()
