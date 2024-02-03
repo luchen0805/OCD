@@ -100,6 +100,7 @@ sw.wrangled2 <- starwars %>%
 
 # this recreated dataset is a little different from mine
 
+## Assignment 11
 # plot 1
 # check stats for height_cm
 summary(sw.wrangled$height_cm)
@@ -168,3 +169,45 @@ sw.wrangled2 %>%
   coord_cartesian(xlim = c(20,90)) +
   scale_x_continuous(breaks = seq(20, 90, by = 20)) + 
   theme_minimal()
+
+## Assignment 12
+# plot 1
+sw.wrangled2 %>%
+  filter(!is.na(mass)) %>%
+  ggplot(aes(x = fct_infreq(hair), y = mass, fill = fct_infreq(hair))) +
+  geom_boxplot() +
+  scale_y_continuous(limits = c(10, 160)) +
+  geom_point() +
+  labs(x = "Hair color(s)", y = "Mass (kg)", fill = "Colorful hair") +
+  theme_minimal()
+
+# plot 2
+sw.wrangled2 %>%
+  filter(!is.na(height_in)) %>%
+  mutate(brown_hair = factor(brown_hair)) %>%
+  mutate(brown_hair = fct_recode(brown_hair, "No brown hair" = "FALSE", "Has brown hair" = "TRUE")) %>%
+  mutate(brown_hair = fct_relevel(brown_hair, "Has brown hair")) %>%
+  ggplot(aes(x = mass, y = height_in)) +
+  geom_point() +
+  facet_wrap(~ brown_hair, labeller = labeller(brown_hair = c("No brown hair" = "No brown hair", "Has brown hair" = "Has brown hair"))) +
+  geom_smooth(method = "lm") +
+  coord_cartesian(ylim = c(-10, 200)) +
+  scale_y_continuous(breaks = c(-4, 20, 23, 80, 100, 200)) +
+  scale_x_continuous(limits = c(-200, 200)) +
+  labs(x = "mass", y = "height_in", title = "Mass vs. height by brown-hair-havingness", subtitle = "A critically important analysis") +
+  theme_minimal()
+
+# plot 3
+sw.wrangled2 %>%
+  filter(!is.na(gender)) %>%
+  mutate(species_first_letter = substr(species, 1, 1)) %>%
+  mutate(species_first_letter = reorder(species_first_letter, -as.numeric(factor(species_first_letter, levels = sort(unique(species_first_letter)))))) %>%
+  group_by(gender, species_first_letter) %>%
+  count() %>%
+  ggplot(aes(x = n, y = species_first_letter, fill = gender)) +
+  geom_bar(stat = "identity", position = "stack") +
+  labs(x = "count", y = "species_first_letter", caption = "A clear male human bias") +
+  coord_cartesian(xlim = c(0,30)) +
+  scale_x_continuous(breaks = seq(0, 30, by = 10)) +
+  theme_classic()
+

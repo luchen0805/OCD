@@ -53,7 +53,7 @@ str(data)
 
 # select specific variable columns that are related to my research questions
 library(dplyr)
-data <- select(data, Patient.ID, Education.Level, Family.History.of.OCD, Previous.Diagnoses)
+data <- select(data, Patient.ID, Education.Level, Family.History.of.OCD, Previous.Diagnoses, Y.BOCS.Score..Obsessions., Y.BOCS.Score..Compulsions.)
 data
 
 # Now I have only these three variable columns that I need for the project with patient ID column
@@ -104,7 +104,7 @@ write.csv(intermediate.OCD.data, csv_file_path)
 
 ggplot(data, aes(x = Education.Level, fill = Family.History.of.OCD)) +
   geom_bar(position = "dodge", color = "black") +
-  scale_fill_manual(values = c("Yes" = "purple", "No" = "blue")) + 
+  scale_fill_manual(values = c("Yes" = "purple", "No" = "pink")) + 
   labs(
     x = "Education Level",
     y = "Frequency",
@@ -119,17 +119,93 @@ ggplot(data, aes(x = Education.Level, fill = Family.History.of.OCD)) +
 # the plot looks fine, no more editing is needed
 ```
 
-```{r}
+```{r plot for two types of Y-BOCS Score across different education levels}
+# reshape data into long format, gather the variables "Y-BOCS Score Obsessions" and "Y-BOCS Score Compulsions" into one single column named "Score_Value", and a new column named "Score_Type" is created to indicate the type of score.
 
+# convert data into long format
+data_long <- data %>%
+  pivot_longer(cols = c(Y.BOCS.Score..Obsessions., Y.BOCS.Score..Compulsions.), names_to = "Score_Type", values_to = "Score_Value")
+
+# Create boxplots
+data_long %>%
+  ggplot(aes(x = Education.Level, y = Score_Value, fill = Education.Level)) +
+  geom_boxplot() +
+  # geom_point(position = position_jitter(width = 0.2), size = 2)
+  facet_wrap(~ Score_Type, scales = "free_y") +
+  labs(x = "Education Level", y = "Y-BOCS Score", title = "Boxplot of Y-BOCS Scores by Education Level") +
+  theme_minimal()
+
+# for this plot, maybe it's not clear to compare two scores for each education level, so I put the boxplots for two types of scores next to each other for each education level in the next plot
+```
+
+```{r another way to plot for two types of Y-BOCS Score across different education levels}
+# this plot makes it easier to compare two different types of scores for each education level, e.g. to compare the mean, Q1, Q3 for each boxplot for two types of scores for one education level
+# Convert data into long format
+data_long <- data %>%
+  pivot_longer(cols = c(Y.BOCS.Score..Obsessions., Y.BOCS.Score..Compulsions.), names_to = "Score_Type", values_to = "Score_Value")
+
+# Create boxplots with labels
+data_long %>%
+  ggplot(aes(x = Education.Level, y = Score_Value, fill = Score_Type, group = interaction(Education.Level, Score_Type))) +
+  geom_boxplot(position = position_dodge(width = 0.8), width = 0.6, alpha = 0.7) +
+  labs(x = "Education Level", y = "Y-BOCS Score", title = "Boxplot of Y-BOCS Scores by Education Level") +
+  theme_minimal()
+
+# Summary Statistics
+summary_stats <- data_long %>%
+  group_by(Education.Level, Score_Type) %>%
+  summarise(
+    mean = mean(Score_Value),
+    median = median(Score_Value),
+    sd = sd(Score_Value),
+    Q1 = quantile(Score_Value, 0.25),
+    Q3 = quantile(Score_Value, 0.75),
+    .groups = "drop"
+  )
+summary_stats
+```
+
+```{r plot to visualize the distribution of two types of scores within each education level group based on the previous boxplot}
+# Convert data into long format
+data_long <- data %>%
+  pivot_longer(cols = c(Y.BOCS.Score..Obsessions., Y.BOCS.Score..Compulsions.), names_to = "Score_Type", values_to = "Score_Value")
+
+# Create density plots
+ggplot(data_long, aes(x = Score_Value, fill = Score_Type)) +
+  geom_density(alpha = 0.5) +
+  facet_wrap(~ Education.Level, nrow = 2) +
+  labs(x = "Y-BOCS Score", y = "Density", fill = "Score Type", title = "Density Plot of Y-BOCS Scores by Education Level") +
+  theme_minimal()
 ```
 
 
-```{r plots plan}
-## For the first plot, I plan to create a bar plot for the prevalence of OCD among individuals with 4 education level groups, to address the first research question "Is there a significant difference in the prevalence of OCD among individuals with varying levels of education?". And then I will use ANOVA/t-test to assess whether the differences in OCD prevalence across education levels are statistically significant. To create the plot, I will use the Education Level column to calculate the percentage of individuals within each education level group. Each education level group has a corresponding bar, and the height of the bar represents the prevalence of OCD in that group. X-axis is for education level groups; Y-axis is for prevalence of OCD.
-library(ggplot2)
-ggplot(data, aes(x = Education.Level)) +
-  geom_bar()
-# from today's class, this bar plot is meaningless, i will calculate the frequency and consider to use a boxplot
+```{r relation between two types of scores across different education levels}
+# create a scatterplot
+ggplot(data, aes(x = Y.BOCS.Score..Obsessions., y = Y.BOCS.Score..Compulsions., color = Education.Level)) +
+  geom_point() +
+  labs(x = "Y-BOCS Score (Obsessions)", y = "Y-BOCS Score (Compulsions)", title = "Scatterplot of Y-BOCS Scores by Education Level") +
+  theme_minimal()
+
+# this plot is really a mass, it can be seen there's no relationship between two scores because points are randomly distributed for each education level between two types of scores
+```
+
+
+```{r plot for previous diagnoses count over different educational levels}
+# To see how different previously diagnosed diseases associate with frequency of OCD across education levels, I plan to create a bar graph. The x-axis stands for the education levels. The y-axis represents the frequency or count of individuals diagnosed with OCD at each education level. The filling represents different previously diagnosed disorders other than OCD.
+
+diagnoses_count <- table(data$Previous.Diagnoses)
+ggplot(data, aes(x = Education.Level, fill = Previous.Diagnoses)) +
+  geom_bar() +
+  labs(
+    x = "Education Level",
+    y = "Frequency of OCD",
+    fill = "Previous Diagnoses",
+    title = "Frequency of OCD by Education Level and Previous Diagnoses"
+  ) +
+  theme_minimal()
+
+# compare the count for each education level for each previously diagnosed disease. carry out ANOVA test for each diagnosed disease.
+```
 
 # calculate frequency of each education level
 education_table <- table(data$Education.Level)
@@ -139,8 +215,6 @@ education_table
 proportion_education_level <- prop.table(education_table)
 proportion_education_level
 
-## For the second plot, I plan to create a pie chart for the distribution of individuals with and without a family history of OCD, to address the second research question "Does the family history of OCD contribute to the development of the OCD disorder?". And then I will use logistic regression/chi-square test to assess the statistical significance of the association. To create the plot, I will use the Family history of OCD column to calculate the percentage of individuals in either group. Then, proportion is represented by the area in the chart.
-
 # calculate frequency of with/without family history
 family_history_table <- table(data$Family.History.of.OCD)
 family_history_table
@@ -148,9 +222,6 @@ family_history_table
 # calculate proportion
 proportion_family_history <- prop.table(family_history_table)
 proportion_family_history
-
-# draw
-pie(proportion_family_history, labels = data$Family.History.of.OCD, main = "Family history of OCD distribution")
 
 ```
 
