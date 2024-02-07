@@ -30,9 +30,22 @@ output            : papaja::apa6_pdf
 ```{r setup, include = FALSE}
 # load papaja package
 library("papaja")
-source("R code.R",local = knitr::knit_global())
 r_refs("r-references.bib")
 ```
+
+```{r caption_chunk, fig.align='center', fig.cap='Family history of OCD and education levels'}
+```
+
+```{r image_chunk, fig.cap="login_failed.jpg"}
+library(jpeg)
+# Read in the image file
+image <- readJPEG("/Users/yuluchen/Desktop/login_failed.jpg")
+
+# Display the image
+grid::grid.raster(image)
+
+```
+
 
 ```{r helloworld, include = FALSE}
 # call hello_world function
@@ -99,27 +112,50 @@ csv_file_path <- "intermediate_ocd_data.csv"
 write.csv(intermediate.OCD.data, csv_file_path)
 ```
 
-```{r plot for how family history of OCD correlates with the frequency of OCD diagnoses across education levels}
+```{r plot for correlation of family history of OCD and education levels}
 # To see how the presence or absence of a family history of OCD correlates with the frequency of OCD diagnoses across education levels, I plan to create a bar graph. The x-axis stands for the education levels. The y-axis represents the frequency or count of individuals diagnosed with OCD at each education level. The filling represents whether individuals have a family history of OCD.
 
-ggplot(data, aes(x = Education.Level, fill = Family.History.of.OCD)) +
+data %>%
+  ggplot(aes(x = Education.Level, fill = Family.History.of.OCD)) +
   geom_bar(position = "dodge", color = "black") +
   scale_fill_manual(values = c("Yes" = "purple", "No" = "pink")) + 
   labs(
     x = "Education Level",
     y = "Frequency",
     fill = "Family History of OCD",
-    title = "Frequency of OCD by Education Level"
+    title = "Frequency of OCD patients across education levels",
+    subtitle = "Association with family history of OCD",
+    caption = "Family history of OCD and education levels"
   ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme_apa() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.text = element_text(size = 10),
+        plot.caption = element_text(hjust = 1, size = 5),
+        legend.title = element_text(size = 10),
+        legend.text = element_text(size = 10))
 
 # according to the plot, within the group of individuals without a family history of OCD, the graduate degree column has the lowest height, and the some college column has the highest height, following by high school and college degree column. So, it can be concluded that the lower the education level, the more individuals have diagnosed with OCD. But statistical analysis is needed: binomial test using yes/no (yes=1, no=0), or chi-square test.
 
-# the plot looks fine, no more editing is needed
+# perform the binomial test
+binom.test <- binom.test(sum(data$Family.History.of.OCD == "Yes"), nrow(data), alternative = "two.sided")
+print(binom.test)
+
+# analyze the binomial test result
+# Based on the p-value (0.6237), which is greater than the typical significance level of 0.05, fail to reject the null hypothesis. This suggests that there is not enough evidence to conclude that the true probability of having a family history of OCD is different from 0.5. Additionally, the sample estimate of the probability of success (0.5066667) is very close to 0.5, further supporting the lack of evidence for a significant deviation from the null hypothesis. So, there is no significant association between family history of OCD and education level.
+
+# perform the chi-square test
+# summarize the counts of "Yes" and "No" responses for family history of OCD across different education levels
+response_table <- table(data$Family.History.of.OCD, data$Education.Level)
+chi_square_test <- chisq.test(response_table)
+print(chi_square_test)
+
+# analyze the chi-square test result
+# With a p-value of 0.2385, which is greater than the typical significance level of 0.05, fail to reject the null hypothesis. This suggests that there is not enough evidence to conclude that there is a significant association between family history of OCD and education level. So, there is no significant association between family history of OCD and education level.
 ```
 
-```{r plot for two types of Y-BOCS Score across different education levels}
+
+
+```{r plot for correlation of Y-BOCS Score and  education levels}
 # reshape data into long format, gather the variables "Y-BOCS Score Obsessions" and "Y-BOCS Score Compulsions" into one single column named "Score_Value", and a new column named "Score_Type" is created to indicate the type of score.
 
 # convert data into long format
@@ -130,40 +166,60 @@ data_long <- data %>%
 data_long %>%
   ggplot(aes(x = Education.Level, y = Score_Value, fill = Education.Level)) +
   geom_boxplot() +
-  # geom_point(position = position_jitter(width = 0.2), size = 2)
-  facet_wrap(~ Score_Type, scales = "free_y") +
-  labs(x = "Education Level", y = "Y-BOCS Score", title = "Boxplot of Y-BOCS Scores by Education Level") +
-  theme_minimal()
+  facet_wrap(~ Score_Type, scales = "free_y", labeller = labeller(Score_Type = c("Y.BOCS.Score..Compulsions." = "Y-BOCS Score Compulsions", "Y.BOCS.Score..Obsessions." = "Y-BOCS Score Obsessions"))) +
+  labs(
+    x = "Education Level",
+    y = "Y-BOCS Score",
+    title = "Y-BOCS scores for different education levels",
+    subtitle = "Subdivided into obsession score and compulsion score",
+    caption = "Y-BOCS score and education levels"
+  ) +
+  theme_apa() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.text = element_text(size = 10),
+        plot.caption = element_text(hjust = 1, size = 5))
 
-# for this plot, maybe it's not clear to compare two scores for each education level, so I put the boxplots for two types of scores next to each other for each education level in the next plot
-```
-
-```{r another way to plot for two types of Y-BOCS Score across different education levels}
-# this plot makes it easier to compare two different types of scores for each education level, e.g. to compare the mean, Q1, Q3 for each boxplot for two types of scores for one education level
-# Convert data into long format
-data_long <- data %>%
-  pivot_longer(cols = c(Y.BOCS.Score..Obsessions., Y.BOCS.Score..Compulsions.), names_to = "Score_Type", values_to = "Score_Value")
-
-# Create boxplots with labels
-data_long %>%
-  ggplot(aes(x = Education.Level, y = Score_Value, fill = Score_Type, group = interaction(Education.Level, Score_Type))) +
-  geom_boxplot(position = position_dodge(width = 0.8), width = 0.6, alpha = 0.7) +
-  labs(x = "Education Level", y = "Y-BOCS Score", title = "Boxplot of Y-BOCS Scores by Education Level") +
-  theme_minimal()
-
-# Summary Statistics
+# Calculate summary statistics for each Score_Type and Education Level
 summary_stats <- data_long %>%
-  group_by(Education.Level, Score_Type) %>%
-  summarise(
-    mean = mean(Score_Value),
-    median = median(Score_Value),
-    sd = sd(Score_Value),
-    Q1 = quantile(Score_Value, 0.25),
-    Q3 = quantile(Score_Value, 0.75),
-    .groups = "drop"
+  group_by(Score_Type, Education.Level) %>%
+  summarize(
+    mean_score = mean(Score_Value),
+    median_score = median(Score_Value),
+    min_score = min(Score_Value),
+    max_score = max(Score_Value),
+    sd_score = sd(Score_Value),
+    .groups = "drop"  # Override grouped output
   )
+
 summary_stats
+
+# analyze the summary_stats
+# Mean Score by Education Level: From the table, the mean Y.BOCS.Score varies slightly across different education levels within each Score_Type (Obsessions and Compulsions). The mean score for Compulsions ranges from 18.5 to 20.2, while for Obsessions, it ranges from 19.5 to 20.6. This suggests that there might be some differences in symptom severity based on education level, although the differences are relatively small.
+# Median Score by Education Level: Similarly, the median score provides an indication of the central tendency of the data. The median Y.BOCS.Score varies slightly across different education levels within each Score_Type (Obsessions and Compulsions).
+# Standard Deviation: The standard deviation (sd_score) measures the variability/spread of the Y.BOCS.Score within each group. Higher standard deviations indicate greater variability in scores. From the table, it is observed that the standard deviations are relatively consistent across different education levels within each Score_Type, ranging from approximately 11.6 to 11.9. This suggests that the spread of Y.BOCS.Score does not vary significantly across education levels.
+# Minimum and Maximum Scores: The minimum and maximum scores provide insights into the range of Y.BOCS.Score within each group. In this case, it is observed that the minimum score is 0 and the maximum score is 40 for all education levels within each Score_Type. This indicates that the full range of scores is observed across all education levels, and there are no outliers beyond this range.
+# Overall, while there are slight variations in mean and median scores across education levels within each Score_Type, the differences are relatively small. Additionally, the variability in Y.BOCS.Score does not appear to vary significantly across education levels. Further statistical analysis, such as ANOVA, could be conducted to formally assess whether there are statistically significant differences in Y.BOCS.Score across education levels within each Score_Type.
+
+# Perform ANOVA for Obsessions
+obsessions_anova <- aov(Score_Value ~ Education.Level, data = data_long[data_long$Score_Type == "Y.BOCS.Score..Obsessions.", ])
+
+# Perform ANOVA for Compulsions
+compulsions_anova <- aov(Score_Value ~ Education.Level, data = data_long[data_long$Score_Type == "Y.BOCS.Score..Compulsions.", ])
+
+# Summarize ANOVA results
+summary(obsessions_anova)
+summary(compulsions_anova)
+
+# Analyze ANOVA rsults
+# Obsession
+# The p-value associated with the F value is 0.348, which is above the conventional significance level of 0.05. This indicates that there is insufficient evidence to reject the null hypothesis, suggesting that there are no statistically significant differences in Y.BOCS.Score across education levels within Obsessions.
+# Compulsion
+# The p-value associated with the F value is 0.169, which is above the conventional significance level of 0.05. This indicates that there is insufficient evidence to reject the null hypothesis, suggesting that there are no statistically significant differences in Y.BOCS.Score across education levels within Compulsions.
+# In both cases, since the p-values are greater than 0.05, fail to reject the null hypothesis. This suggests that there are no statistically significant differences in Y.BOCS.Score across education levels within Obsessions or Compulsions.
+
 ```
+
+
 
 ```{r plot to visualize the distribution of two types of scores within each education level group based on the previous boxplot}
 # Convert data into long format
@@ -178,16 +234,6 @@ ggplot(data_long, aes(x = Score_Value, fill = Score_Type)) +
   theme_minimal()
 ```
 
-
-```{r relation between two types of scores across different education levels}
-# create a scatterplot
-ggplot(data, aes(x = Y.BOCS.Score..Obsessions., y = Y.BOCS.Score..Compulsions., color = Education.Level)) +
-  geom_point() +
-  labs(x = "Y-BOCS Score (Obsessions)", y = "Y-BOCS Score (Compulsions)", title = "Scatterplot of Y-BOCS Scores by Education Level") +
-  theme_minimal()
-
-# this plot is really a mass, it can be seen there's no relationship between two scores because points are randomly distributed for each education level between two types of scores
-```
 
 
 ```{r plot for previous diagnoses count over different educational levels}

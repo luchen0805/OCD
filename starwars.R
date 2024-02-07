@@ -211,3 +211,39 @@ sw.wrangled2 %>%
   scale_x_continuous(breaks = seq(0, 30, by = 10)) +
   theme_classic()
 
+## Assignment 13
+# plot 1
+# install ggsci package
+install.packages("ggsci")
+library(ggsci)
+
+sw.wrangled2 %>%
+  mutate(gender = ifelse(is.na(gender), "other", gender)) %>% # replace NA with "other"
+  ggplot(aes(x = height_cm, y = mass, color = gender)) +
+  geom_point(size = 2, alpha = 0.5) +
+  facet_wrap(~gender, scales = "free", labeller = labeller(gender = c("1" = "Female", "2" = "Male", other = "Other"))) +
+  geom_smooth(method = "lm", fill = "#CCCBFF") +
+  scale_color_manual(values = c("darkred", "darkgrey", "orange"), labels = c('Female', 'Male', 'Other')) + # set color for gender variable
+  labs(x = "Height (cm)", y = "Mass (kg)", title = "Height and weight across gender presentation", subtitle = "A cautionary tale in misleading 'free' axis scales & bad design choices", caption = "Color hint: use the ggsci package!", color = "Gender Presentation") +
+  scale_x_continuous(limits = c(60, 270), breaks = seq(60, 270, by = 30)) + # change x-axis scale
+  theme(strip.placement = "outside", 
+        strip.text.x = element_text(hjust = 0), 
+        strip.background = element_rect(fill = "darkgreen"), 
+        strip.text = element_text(color = "white", family = "serif"),
+        panel.grid.minor.y = element_blank(), # remove minor grid line for y-axis
+        panel.grid.minor.x = element_blank(), # remove minor grid line for x-axis
+        panel.grid.major.x = element_line(linetype = 'dashed'),
+        panel.grid.major.y = element_line(linetype = 'dotdash', color = "grey", size = 1),
+        plot.title = element_text(family = "Comic Sans MS"),
+        plot.subtitle = element_text(family = "Comic Sans MS"),
+        plot.caption = element_text(color = "red", angle = 180, hjust = 0, family = "Comic Sans MS"),
+        panel.background = element_rect(fill = "#FFEEEE"),
+        legend.position = "bottom",
+        legend.title = element_text(family = "Brush Script MT", face = "bold", size = 20),
+        legend.text = element_text(family = "Comic Sans MS", size = 10),
+        legend.background = element_rect(fill = "#CCCBFF"),
+        axis.text.x = element_text(family = "Comic Sans MS", angle = 45, hjust = 1),
+        axis.text.y = element_text(family = "Comic Sans MS"),
+        axis.title.x = element_text(family = "Comic Sans MS"),
+        axis.title.y = element_text(family = "Comic Sans MS")) 
+# almost the same, not sure about the font type for facet_wrap names, also not sure about font type for numbers on x-axis and y-axis
