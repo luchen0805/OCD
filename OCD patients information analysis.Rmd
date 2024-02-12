@@ -1,0 +1,286 @@
+---
+title             : "OCD Patients Information Analysis"
+
+author: 
+  - name          : "Luchen Yu"
+    affiliation   : "1"
+    email         : "ylc23@uchicago.edu"
+
+affiliation:
+  - id            : "1"
+    institution   : "University of Chicago"
+
+authornote: |
+  Add complete departmental affiliations for each author here. Each new line herein must be indented, like this line.
+
+  Enter author note here.
+
+abstract: |
+  One or two sentences providing a **basic introduction** to the field,  comprehensible to a scientist in any discipline.
+  Two to three sentences of **more detailed background**, comprehensible  to scientists in related disciplines.
+  One sentence clearly stating the **general problem** being addressed by  this particular study.
+  One sentence summarizing the main result (with the words "**here we show**" or their equivalent).
+  Two or three sentences explaining what the **main result** reveals in direct comparison to what was thought to be the case previously, or how the  main result adds to previous knowledge.
+  One or two sentences to put the results into a more **general context**.
+  Two or three sentences to provide a **broader perspective**, readily comprehensible to a scientist in any discipline.
+  
+  <!-- https://tinyurl.com/ybremelq -->
+  
+keywords          : "keywords"
+wordcount         : "X"
+
+bibliography      : "r-references.bib"
+
+floatsintext      : no
+linenumbers       : yes
+draft             : no
+mask              : no
+
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+
+classoption       : "man"
+output            : papaja::apa6_pdf
+---
+
+```{r setup, include = FALSE}
+library("papaja")
+r_refs("r-references.bib")
+```
+
+```{r analysis-preferences}
+# Seed for random number generation
+set.seed(42)
+knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
+```
+
+```{r data-prep}
+# load readr package
+library(readr)
+
+# read in the dataset
+data <- read.csv("ocd_patient_dataset.csv")
+
+# examine the dataset
+str(data)
+
+# It includes many variable columns that I don't need, and I don't want Patient.ID to represent patients, I want ordered patient numbers
+
+# select specific variable columns that are related to my research questions
+library(dplyr)
+data <- select(data, Patient.ID, Education.Level, Family.History.of.OCD, Previous.Diagnoses, Y.BOCS.Score..Obsessions., Y.BOCS.Score..Compulsions.)
+data
+
+# Now I have only these three variable columns that I need for the project with patient ID column
+# For a more clear looking dataset, I want to replace these non-ordered patient ID with integers 1-1500
+# I will remove Patient.ID column and create Patient.Number column as the first variable column
+
+# create a new patient id column with ordered integers from 1 to 1500
+new_patients_id <- 1:1500
+data$Patient.ID <- new_patients_id
+data
+
+# export this new dataset
+csv_file_path <- "final_data_prep.csv"
+write.csv(data, csv_file_path)
+
+# Now it's a concise dataset with every variable I need and ordered with patient numbers
+# And I think it's good now for the next data analysis part
+
+# each column is either a character or numeric number
+# each row is a single observation for one patient
+# each cell is a single measurement
+# for research questions about the association of the prevalence of OCD with education level, family history of OCD, and previously diagnosed disorders, only the column "Education Level", "Family History of OCD", and "Previous Diagnoses" are needed, all the other columns are extraneous
+```
+
+```{r family-history-plot, fig.cap="Family history of OCD and education levels"}
+# To see how the presence or absence of a family history of OCD correlates with the frequency of OCD diagnoses across education levels, I plan to create a bar graph. The x-axis stands for the education levels. The y-axis represents the frequency or count of individuals diagnosed with OCD at each education level. The filling represents whether individuals have a family history of OCD.
+library(ggplot2)
+
+data %>%
+  ggplot(aes(x = Education.Level, fill = Family.History.of.OCD)) +
+  geom_bar(position = "dodge", color = "black") +
+  scale_fill_manual(values = c("Yes" = "purple", "No" = "pink")) + 
+  labs(
+    x = "Education Level",
+    y = "Frequency",
+    fill = "Family History of OCD",
+    title = "Frequency of OCD patients across education levels",
+    subtitle = "Association with family history of OCD",
+    caption = "Family history of OCD and education levels"
+  ) +
+  theme_apa() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.text = element_text(size = 10),
+        plot.caption = element_text(hjust = 1, size = 5),
+        legend.title = element_text(size = 10),
+        legend.text = element_text(size = 10))
+
+# according to the plot, within the group of individuals without a family history of OCD, the graduate degree column has the lowest height, and the some college column has the highest height, following by high school and college degree column. So, it can be concluded that the lower the education level, the more individuals have diagnosed with OCD. But statistical analysis is needed: binomial test using yes/no (yes=1, no=0), or chi-square test.
+
+# perform the binomial test
+binom.test <- binom.test(sum(data$Family.History.of.OCD == "Yes"), nrow(data), alternative = "two.sided")
+print(binom.test)
+
+# analyze the binomial test result
+# Based on the p-value (0.6237), which is greater than the typical significance level of 0.05, fail to reject the null hypothesis. This suggests that there is not enough evidence to conclude that the true probability of having a family history of OCD is different from 0.5. Additionally, the sample estimate of the probability of success (0.5066667) is very close to 0.5, further supporting the lack of evidence for a significant deviation from the null hypothesis. So, there is no significant association between family history of OCD and education level.
+
+# perform the chi-square test
+# summarize the counts of "Yes" and "No" responses for family history of OCD across different education levels
+response_table <- table(data$Family.History.of.OCD, data$Education.Level)
+chi_square_test <- chisq.test(response_table)
+print(chi_square_test)
+
+# analyze the chi-square test result
+# With a p-value of 0.2385, which is greater than the typical significance level of 0.05, fail to reject the null hypothesis. This suggests that there is not enough evidence to conclude that there is a significant association between family history of OCD and education level. So, there is no significant association between family history of OCD and education level.
+```
+
+```{r score-plot, fig.cap="Y-BOCS score and education levels"}
+# reshape data into long format, gather the variables "Y-BOCS Score Obsessions" and "Y-BOCS Score Compulsions" into one single column named "Score_Value", and a new column named "Score_Type" is created to indicate the type of score.
+library(tidyr)
+
+# convert data into long format
+data_long <- data %>%
+  pivot_longer(cols = c(Y.BOCS.Score..Obsessions., Y.BOCS.Score..Compulsions.), names_to = "Score_Type", values_to = "Score_Value")
+
+# Create boxplots
+data_long %>%
+  ggplot(aes(x = Education.Level, y = Score_Value, fill = Education.Level)) +
+  geom_boxplot() +
+  facet_wrap(~ Score_Type, scales = "free_y", labeller = labeller(Score_Type = c("Y.BOCS.Score..Compulsions." = "Y-BOCS Score Compulsions", "Y.BOCS.Score..Obsessions." = "Y-BOCS Score Obsessions"))) +
+  labs(
+    x = "Education Level",
+    y = "Y-BOCS Score",
+    title = "Y-BOCS scores for different education levels",
+    subtitle = "Subdivided into obsession score and compulsion score",
+    caption = "Y-BOCS score and education levels"
+  ) +
+  theme_apa() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.text = element_text(size = 10),
+        plot.caption = element_text(hjust = 1, size = 5))
+
+# Calculate summary statistics for each Score_Type and Education Level
+summary_stats <- data_long %>%
+  group_by(Score_Type, Education.Level) %>%
+  summarize(
+    mean_score = mean(Score_Value),
+    median_score = median(Score_Value),
+    min_score = min(Score_Value),
+    max_score = max(Score_Value),
+    sd_score = sd(Score_Value),
+    .groups = "drop"  # Override grouped output
+  )
+
+summary_stats
+
+# analyze the summary_stats
+# Mean Score by Education Level: From the table, the mean Y.BOCS.Score varies slightly across different education levels within each Score_Type (Obsessions and Compulsions). The mean score for Compulsions ranges from 18.5 to 20.2, while for Obsessions, it ranges from 19.5 to 20.6. This suggests that there might be some differences in symptom severity based on education level, although the differences are relatively small.
+# Median Score by Education Level: Similarly, the median score provides an indication of the central tendency of the data. The median Y.BOCS.Score varies slightly across different education levels within each Score_Type (Obsessions and Compulsions).
+# Standard Deviation: The standard deviation (sd_score) measures the variability/spread of the Y.BOCS.Score within each group. Higher standard deviations indicate greater variability in scores. From the table, it is observed that the standard deviations are relatively consistent across different education levels within each Score_Type, ranging from approximately 11.6 to 11.9. This suggests that the spread of Y.BOCS.Score does not vary significantly across education levels.
+# Minimum and Maximum Scores: The minimum and maximum scores provide insights into the range of Y.BOCS.Score within each group. In this case, it is observed that the minimum score is 0 and the maximum score is 40 for all education levels within each Score_Type. This indicates that the full range of scores is observed across all education levels, and there are no outliers beyond this range.
+# Overall, while there are slight variations in mean and median scores across education levels within each Score_Type, the differences are relatively small. Additionally, the variability in Y.BOCS.Score does not appear to vary significantly across education levels. Further statistical analysis, such as ANOVA, could be conducted to formally assess whether there are statistically significant differences in Y.BOCS.Score across education levels within each Score_Type.
+
+# Perform ANOVA for Obsessions
+obsessions_anova <- aov(Score_Value ~ Education.Level, data = data_long[data_long$Score_Type == "Y.BOCS.Score..Obsessions.", ])
+
+# Perform ANOVA for Compulsions
+compulsions_anova <- aov(Score_Value ~ Education.Level, data = data_long[data_long$Score_Type == "Y.BOCS.Score..Compulsions.", ])
+
+# Summarize ANOVA results
+obsessions_anova_summary <- summary(obsessions_anova)
+compulsions_anova_summary <- summary(compulsions_anova)
+
+# Analyze ANOVA results
+# Obsession
+# The p-value associated with the F value is 0.348, which is above the conventional significance level of 0.05. This indicates that there is insufficient evidence to reject the null hypothesis, suggesting that there are no statistically significant differences in Y.BOCS.Score across education levels within Obsessions.
+# Compulsion
+# The p-value associated with the F value is 0.169, which is above the conventional significance level of 0.05. This indicates that there is insufficient evidence to reject the null hypothesis, suggesting that there are no statistically significant differences in Y.BOCS.Score across education levels within Compulsions.
+# In both cases, since the p-values are greater than 0.05, fail to reject the null hypothesis. This suggests that there are no statistically significant differences in Y.BOCS.Score across education levels within Obsessions or Compulsions.
+
+```
+
+```{r previous-diagnoses-plot, fig.cap="Previous diagnoses and education levels"}
+# To see how different previously diagnosed diseases associate with frequency of OCD across education levels, I plan to create a bar graph. The x-axis stands for the education levels. The y-axis represents the frequency or count of individuals diagnosed with OCD at each education level. The filling represents different previously diagnosed disorders other than OCD.
+
+diagnoses_count <- table(data$Previous.Diagnoses)
+ggplot(data, aes(x = Education.Level, fill = Previous.Diagnoses)) +
+  geom_bar() +
+  labs(
+    x = "Education Level",
+    y = "Frequency of OCD",
+    fill = "Previous Diagnoses",
+    title = "Frequency of OCD by Education Level and Previous Diagnoses",
+    caption = "Previous diagnoses and education levels"
+  ) +
+  theme_apa() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.text = element_text(size = 10),
+        plot.caption = element_text(hjust = 1, size = 5))
+
+# compare the count for each education level for each previously diagnosed disease. carry out ANOVA test for each diagnosed disease.
+```
+
+```{r frequency-table, fig.cap="Number across education levels"}
+# load the package
+library(kableExtra)
+
+data %>%
+  group_by(Education.Level) %>%
+  summarize(Frequency = n()) %>%
+  knitr::kable(caption = "Number across education levels",
+               col.names = c("Education Level", "Number of OCD Patients"),
+               align = c("l", "l")) %>%
+  add_header_above(c("Number of OCD patients across education levels" = 2), bold = TRUE, align = "c") %>%
+  kable_styling(latex_options = "hold_position")
+
+```
+
+# Reference both figures and table
+As shown in the figure (Figure\\@ref(fig:family-history-plot)), and figure (Figure\\@ref(fig:score-plot)) and table (Table\\@ref(tab:frequency-table)).
+
+
+# **Introduction**
+
+
+
+<!-- Ordered list -->
+I will analyze these three research questions below.  
+1. Is there a significant difference in the prevalence of OCD among individuals with varying levels of education?  
+2. Does the family history of OCD contribute to the development of the OCD disorder?  
+3. Are patients previously diagnosed with other disorders more likely to develop OCD?
+
+<!-- Unordered list -->
+I will analyze from three aspects.  
+* Association of education level with prevalence of OCD.  
+* Association of family history of OCD with prevalence of OCD.  
+* Association of previously diagnosed disorders with prevalence of OCD.  
+
+<!-- Linked URL -->
+[My GitHub](https://github.com/luchen0805/OCD)
+
+# **Methods**
+
+# **Data analysis**
+I used `r cite_r("r-references.bib")` for all our analyses.
+
+## ***Association of education level with prevalence of OCD***
+
+### Is there a significant difference
+
+## ***Association of family history of OCD with prevalence of OCD***
+
+## ***Impact of previously diagonsed disorders on prevalence of OCD***
+
+# **Results**
+
+# **Discussion**
+
+
+\newpage
+
+# **References**
+
+::: {#refs custom-style="Bibliography"}
+:::
