@@ -1,5 +1,6 @@
 ---
 title             : "OCD Patients Information Analysis"
+shorttitle        : ""
 
 author: 
   - name          : "Luchen Yu"
@@ -29,15 +30,16 @@ wordcount         : "X"
 
 bibliography      : "r-references.bib"
 
-floatsintext      : no
-linenumbers       : yes
+floatsintext      : yes
+linenumbers       : no
 draft             : no
 mask              : no
-
 figurelist        : no
 tablelist         : no
 footnotelist      : no
+numbersections    : yes
 
+documentclass     : "apa6"
 classoption       : "man"
 output            : papaja::apa6_pdf
 ---
@@ -69,16 +71,18 @@ knitr::opts_chunk$set(
 
 # **Introduction**
 
-Obsessive-compulsive disorder (OCD) is a neuropsychiatric disease with obsessive thoughts and compulsive behaviors as its main clinical manifestations. Although patients experience these thoughts or impulses originate from themselves and try their best to resist, they are still unable to control them. The strong conflict between the two makes them feel great anxiety and pain, which affects their study, work, interpersonal communication and even daily life (NIMH). However, one study questioned the classification of obsessions and compulsions, stating that the symptomatology of OCD cannot be simply broken down into these two categories of obsessive thoughts and compulsive behaviors(Deacon J). The cause of OCD is complex and inconclusive, but certain factors can increase the incidence of the disorder, such as genetics, childhood trauma, and temperament. Research shows that people who have a first-degree relative with OCD are more likely to develop OCD; people with childhood trauma are more likely to develop OCD; and people who had anxiety and depression in childhood are more likely to develop OCD (OCD-NIMH). While OCD is common and takes a significant toll on sufferers, research shows that Cognitive Behavior Therapy (CBT) using Exposure Response Prevention (ERP) has proven to be highly effective in reducing symptoms in 12 to 15 sessions, and its therapeutic effect can last for about two years (book chapter).
+Obsessive-compulsive disorder (OCD) is a neuropsychiatric disease with obsessive thoughts and compulsive behaviors as its main clinical manifestations. Although patients experience these thoughts or impulses originate from themselves and try their best to resist, they are still unable to control them. The strong conflict between the two makes them feel great anxiety and pain, which affects their study, work, interpersonal communication and even daily life [@ObsessiveCompulsiveDisorderNational]. However, Deacon and Abramowitz, in their [-@deaconYaleBrownObsessiveCompulsive2005] study, questioned the classification of obsessions and compulsions, stating that the symptomatology of OCD cannot be simply broken down into these two categories of obsessive thoughts and compulsive behaviors. The cause of OCD is complex and inconclusive, but certain factors can increase the incidence of the disorder, such as genetics, childhood trauma, and temperament. Research shows that people who have a first-degree relative with OCD are more likely to develop OCD; people with childhood trauma are more likely to develop OCD; and people who had anxiety and depression in childhood are more likely to develop OCD [@ObsessiveCompulsiveDisorderNational]. While OCD is common and takes a significant toll on sufferers, research shows that Cognitive Behavior Therapy (CBT) using Exposure Response Prevention (ERP) has proven to be highly effective in reducing symptoms in 12 to 15 sessions, and its therapeutic effect can last for about two years [@sulkowskiChapter12OCD2018].
 
-The diagnosis and assessment of OCD comes from the Yale–Brown Obsessive-Compulsive Scale (Y-BOCS) introduced in 1989. The scale consists of 16 main items and is scored according to a five-step Likert scale, and the total score of the top 10 items is calculated. The first five items are used to measure symptoms and disorders related to obsession, and the last five items are used to measure symptoms and disorders related to compulsion (dimensional). Research shows that the scores of each symptom dimension in the score are basically independent of each other and have no correlation with scores of other diseases such as anxiety and depression (the dimension).
+The diagnosis and assessment of OCD comes from the Yale–Brown Obsessive-Compulsive Scale (Y-BOCS) introduced in 1989. The scale consists of 16 main items and is scored according to a five-step Likert scale, and the total score of the top 10 items is calculated. Among them, the first five items are used to measure symptoms and disorders related to obsession, and the last five items are used to measure symptoms and disorders related to compulsion [@moritzDimensionalStructureYale2002]. In the case of a total score of 40 points, the higher the score, the more severe the symptoms: 0 to 7 points represent subclinical symptoms, 8 to 15 points represent mild symptoms, 16 to 23 points represent moderate symptoms, 24 to 31 points represent severe symptoms, 32 to 40 points represent extreme symptoms [@woottonObsessiveCompulsiveDisorder2016]. @rosario-camposDimensionalYaleBrown2006 in their research also shows that the scores of each symptom dimension in the score, such as obsession score and compulsion score, are basically independent of each other and have no correlation with scores of other diseases such as anxiety and depression.
 
-In terms of education, approximately 3% of children in the United States have been diagnosed with obsessive-compulsive disorder (book chapter). But in fact, it can be difficult to identify students with OCD because symptoms appear similar to those of some other mental disorders or illnesses (OCD at school). Research shows that children with OCD are more likely to have poor grades in school or to drop out of school prematurely (association of). And children with OCD do significantly worse in mathematics (OCD in the school). As far as education level is concerned, research has found that OCD symptoms are worst before the end of high school, but will improve significantly in college, so a reasonable speculation is that as education level increases, the symptoms of obsessive-compulsive disorder will decrease ( association of).
+In terms of school students with OCD, approximately 3% of children in the United States have been diagnosed with obsessive-compulsive disorder. But in fact, it can be difficult to identify students with OCD because symptoms appear similar to those of some other mental disorders or illnesses [@OCDSchoolAnxietya]. Research shows that children with OCD are more likely to have poor grades in school or to drop out of school prematurely [@perez-vigilAssociationObsessiveCompulsiveDisorder2018]. And children with OCD do significantly worse in mathematics [@negreirosObsessiveCompulsiveDisorderOCD2023]. As far as education level is concerned, research has found that OCD symptoms are worst before the end of high school, but will improve significantly in college, so a reasonable speculation is that as education level increases, the symptoms of obsessive-compulsive disorder will decrease [@perez-vigilAssociationObsessiveCompulsiveDisorder2018]. At the same time, the results of a longitudinal twin experiment showed that obsessive-compulsive symptoms (OCS) aggravated anxiety sensitivity, and conversely, anxiety sensitivity also aggravated OCS. However, no direct relationship has been found between OCD and anxiety disorder [@krebsReciprocalLinksAnxiety2020].
+
+In this project, I explored the performance and some correlations of diagnostic information at different education levels based on the clinical diagnosis and other basic information of patients with OCD. The research questions raised include: can education level and family history of OCD predict the likelihood of having anxiety disorder? And, whether Y-BOCS score has some trends in different education levels.
 
 
 # **Methods**
 
-I extracted this dataset about OCD patients' demographic information and clinical diagnostic data from kaggle.com. The dataset contains information like Patient ID, Age, Gender, Education Level, Previous Diagnoses, Family History of OCD, Y-BOCS Score for Obsessions, Y-BOCS Score for Compulsions, Depression Diagnosis, Anxiety Diagnosis, etc. for 1500 OCD patients. 
+I extracted this dataset about OCD patients' demographic information and clinical diagnostic data from kaggle.com. The dataset contains information like Patient ID, Age, Gender, Education Level, Previous Diagnoses, Family History of OCD, Y-BOCS Score for Obsessions, Y-BOCS Score for Compulsions, Depression Diagnosis, Anxiety Diagnosis, etc. for 1500 OCD patients. I used R for all the plotting and analysis.
 
 
 
