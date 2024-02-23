@@ -1,6 +1,6 @@
 ---
-title             : "OCD Patients Information Analysis"
-shorttitle        : ""
+title             : "Correlations of Clinical Diagnostic Information and Demographic Information at Different Education Levels for OCD Patients"
+shorttitle        : "OCD PATIENTS INFORMATION ANALYSIS"
 
 author: 
   - name          : "Luchen Yu"
@@ -12,21 +12,17 @@ affiliation:
     institution   : "University of Chicago"
 
 authornote: |
-  Department of Biomedical Sciences
+  Please email ylc23@uchicago.edu for questions about this paper.
 
 abstract: |
-  One or two sentences providing a **basic introduction** to the field,  comprehensible to a scientist in any discipline.
-  Two to three sentences of **more detailed background**, comprehensible  to scientists in related disciplines.
-  One sentence clearly stating the **general problem** being addressed by  this particular study.
-  One sentence summarizing the main result (with the words "**here we show**" or their equivalent).
-  Two or three sentences explaining what the **main result** reveals in direct comparison to what was thought to be the case previously, or how the  main result adds to previous knowledge.
-  One or two sentences to put the results into a more **general context**.
-  Two or three sentences to provide a **broader perspective**, readily comprehensible to a scientist in any discipline.
+  Chatacteristics of OCD patients are complicated. Their demographic information include a family history of OCD and education level, and their clinical diagnostic information include the occurrence of anxiety disorder and the Y-BOCS scores. In this paper, I examined how these factors are correlated. And more specifically, can education level and family history of OCD be used as factors to predict anxiety disorder? Is there a correlation between education level and Y-BOCS score? The findings showed that education level and family history of OCD cannot be used to predict anxiety disorder, and education level and Y-BOCS score are not correlated. The previous one is consistent with the results from other studies, but as another study shows, Y-BOCS score decreases with increasing education level. To further test the second finding, more studies are needed. And as this paper does not show any statistically significant correlation for these factors, genetic information may play a role. Future research could also look at the genes that associate with OCD.
+  
+ 
   
   <!-- https://tinyurl.com/ybremelq -->
   
-keywords          : "keywords"
-wordcount         : "X"
+keywords          : "OCD, education level, family history of OCD, anxiety disorder, Y-BOCS score"
+wordcount         : "164"
 
 bibliography      : "r-references.bib"
 
@@ -39,8 +35,22 @@ tablelist         : no
 footnotelist      : no
 numbersections    : yes
 
-documentclass     : "apa6"
-classoption       : "man"
+header-includes:
+  - |
+    \makeatletter
+    \renewcommand{\paragraph}{\@startsection{paragraph}{4}{\parindent}%
+      {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
+      {-1em}%
+      {\normalfont\normalsize\bfseries\typesectitle}}
+    
+    \renewcommand{\subparagraph}[1]{\@startsection{subparagraph}{5}{1em}%
+      {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
+      {-\z@\relax}%
+      {\normalfont\normalsize\bfseries\itshape\hspace{\parindent}{#1}\textit{\addperi}}{\relax}}
+    \makeatother
+
+csl               : "`r system.file('rmd', 'apa7.csl', package = 'papaja')`"
+documentclass     : "apa7"
 output            : papaja::apa6_pdf
 ---
 
@@ -53,6 +63,7 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(devtools)
+library(car)
 
 devtools::install_github("crsh/citr")
 r_refs("r-references.bib")
@@ -77,12 +88,12 @@ The diagnosis and assessment of OCD comes from the Yale–Brown Obsessive-Compul
 
 In terms of school students with OCD, approximately 3% of children in the United States have been diagnosed with obsessive-compulsive disorder. But in fact, it can be difficult to identify students with OCD because symptoms appear similar to those of some other mental disorders or illnesses [@OCDSchoolAnxietya]. Research shows that children with OCD are more likely to have poor grades in school or to drop out of school prematurely [@perez-vigilAssociationObsessiveCompulsiveDisorder2018]. And children with OCD do significantly worse in mathematics [@negreirosObsessiveCompulsiveDisorderOCD2023]. As far as education level is concerned, research has found that OCD symptoms are worst before the end of high school, but will improve significantly in college, so a reasonable speculation is that as education level increases, the symptoms of obsessive-compulsive disorder will decrease [@perez-vigilAssociationObsessiveCompulsiveDisorder2018]. At the same time, the results of a longitudinal twin experiment showed that obsessive-compulsive symptoms (OCS) aggravated anxiety sensitivity, and conversely, anxiety sensitivity also aggravated OCS. However, no direct relationship has been found between OCD and anxiety disorder [@krebsReciprocalLinksAnxiety2020].
 
-In this project, I explored the performance and some correlations of diagnostic information at different education levels based on the clinical diagnosis and other basic information of patients with OCD. The research questions raised include: can education level and family history of OCD predict the likelihood of having anxiety disorder? And, whether Y-BOCS score has some trends in different education levels.
+In this project, I explored the performance and some correlations of diagnostic information at different education levels based on the clinical diagnosis and other basic information of patients with OCD. The research questions include: can education level and family history of OCD predict the likelihood of having anxiety disorder? And, whether Y-BOCS score has some trends in different education levels.
 
 
 # **Methods**
 
-I extracted this dataset about OCD patients' demographic information and clinical diagnostic data from kaggle.com. The dataset contains information like Patient ID, Age, Gender, Education Level, Previous Diagnoses, Family History of OCD, Y-BOCS Score for Obsessions, Y-BOCS Score for Compulsions, Depression Diagnosis, Anxiety Diagnosis, etc. for 1500 OCD patients. I used R for all the plotting and analysis.
+I extracted this dataset about OCD patients' demographic information and clinical diagnostic data from kaggle.com. The dataset contains information like Patient ID, Age, Gender, Education Level, Previous Diagnoses, Family History of OCD, Y-BOCS Score for Obsessions, Y-BOCS Score for Compulsions, Depression Diagnosis, Anxiety Diagnosis, etc. for 1500 OCD patients. I used R for all the plotting and data analysis.
 
 
 
@@ -95,7 +106,7 @@ I extracted this dataset about OCD patients' demographic information and clinica
 data <- read.csv("ocd_patient_dataset.csv")
 
 # examine the dataset
-str(data)
+# str(data)
 
 # It includes many variable columns that I don't need, and I don't want Patient.ID to represent patients, I want ordered patient numbers
 
@@ -127,7 +138,6 @@ write.csv(data, csv_file_path)
 
 ## **Predict anxiety disorder with education level and family history of OCD**
 
-To use education level and family history of OCD as two factors to predict anxiety disorder, I set four education levels as x-axis and the y-axis shows the proportions of having and not having anxiety disorders within each education level. As shown in Figure\ \@ref(fig:anxiety-diagnosis-plot), I divided the whole plot into two facets: one with a family history of OCD and one without a family history of OCD.
 
 ```{r anxiety-diagnosis-plot, fig.cap="Predict anxiety disorder through education level and family history of OCD"}
 
@@ -155,11 +165,12 @@ data %>%
         legend.text = element_text(size = 10))
 ```
 
-
-To analyze Figure\ \@ref(fig:anxiety-diagnosis-plot), prediction of anxiety disorder by education level and family history of OCD, I calculated the proportions of OCD patients from four education levels with and without anxiety disorder in two cases: those with family history of OCD and those without family history of OCD.
+To use education level and family history of OCD as two factors to predict anxiety disorder, I set four education levels as x-axis and the y-axis shows the proportions of having and not having anxiety disorders within each education level. As shown in Figure\ \@ref(fig:anxiety-diagnosis-plot), I divided the whole plot into two facets: one with a family history of OCD and one without a family history of OCD. To analyze Figure\ \@ref(fig:anxiety-diagnosis-plot), prediction of anxiety disorder by education level and family history of OCD, I calculated the proportions of OCD patients from four education levels with and without anxiety disorder in two cases: those with family history of OCD and those without family history of OCD.
 
 ### **With a family history of OCD**
+
 The diagnosis rate of anxiety disorder is based on each education level. Within an education level, the sum of the proportions of OCD patients diagnosed with anxiety disorder and those without diagnosis of anxiety disorder is one.
+
 ```{r descriptive-analysis-one-anxiety-diagnosis-plot}
 # calculate proportions for the facet where Family.History.of.OCD == "Yes"
 proportions <- data %>%
@@ -221,7 +232,7 @@ Comparing the proportion for the same education level for having and not having 
 
 ### **Test analysis**
 
-I applied the logistic regression model to analyze the effect of education level and family history of OCD on predicting anxiety disorder.
+I applied the logistic regression model to analyze the effect of each individual education level and family history of OCD on predicting anxiety disorder. I also applied ANOVA to see the significance of education level as a whole.
 ```{r test-analysis-anxiety-diagnosis-plot}
 # recode Anxiety.Diagnosis to binary (0 and 1)
 data$Anxiety.Diagnosis <- ifelse(data$Anxiety.Diagnosis == "Yes", 1, 0)
@@ -229,6 +240,8 @@ data$Anxiety.Diagnosis <- ifelse(data$Anxiety.Diagnosis == "Yes", 1, 0)
 # convert 'Education.Level' to a factor with specified levels
 data2 <- data %>%
   mutate(Education.Level = factor(Education.Level, levels = c("High School", "Some College", "College Degree", "Graduate Degree")))
+data2$Education.Level <- factor(data2$Education.Level)
+data2$Family.History.of.OCD <- factor(data2$Family.History.of.OCD)
 
 # fit logistic regression model
 logistic_model <- glm(Anxiety.Diagnosis ~ Education.Level + Family.History.of.OCD, data = data2, family = binomial) 
@@ -236,13 +249,17 @@ logistic_model <- glm(Anxiety.Diagnosis ~ Education.Level + Family.History.of.OC
 
 # summarize the logistic regression model
 summary(logistic_model)
+Anova(logistic_model)
 ```
+
 
 The coefficient for having a family history of OCD is -0.05988, indicating that it is less likely for OCD patients who have a family history of OCD to have anxiety disorder. However, this coefficient is not statistically significant as p-value is larger than 0.5. Similarly, as the p-values are larger than 0.5, the coefficients for high school level, some college level, and college degree level are all not statistically significant. So, these education levels and the family history of OCD are not useful predictors of anxiety disorder. The only p-value that is smaller than 0.05 is for graduate degree level. So, having a graduate degree appears to be a significant predictor of higher odds of anxiety disorder compared to all other education levels. At the same time, because larger coefficient indicates a stronger effect on the outcome variable, the coefficient for graduate degree level of 0.31656 is relatively large compared to other coefficients. So, it has a stronger effect on predicting anxiety disorder compared to other education levels or family history of OCD. However, the overall fit of the model is not good, as indicated by the high null and residual deviance values, and the high AIC value. Therefore, it can be concluded that education level and family history of OCD are not able to be used to predict the occurrence of anxiety disorder.
 
+The ANOVA results also showed that both education level and family history of OCD are statistically insignificant for predicting anxiety disorder.
+
 ## **Obsession and compulsion Y-BOCS scores for different education levels**
 
-The Y-BOCS score is divided into Y-BOCS score for obsession and Y-BOCS score for compulsion in this dataset. Firstly, I want to see if there is a correlation between these two types of Y-BOCS scores (Figure\ \@ref(fig:score-correlation-plot)).
+
 ```{r score-correlation-plot, fig.cap="Correlation between obsessions Y-BOCS-Score and compulsions Y-BOCS-Score"}
 data %>% 
   ggplot(aes(x = Y.BOCS.Score..Obsessions., y = Y.BOCS.Score..Compulsions.)) +
@@ -259,9 +276,8 @@ data %>%
         plot.margin = unit(c(1, 1, 1, 1), "cm"))
 ```
 
-Based on Figure\ \@ref(fig:score-correlation-plot), there is no correlation between these two types of Y-BOCS scores, so Y-BOCS score for obsession will not affect Y-BOCS score for compulsion, and the reverse is also true.
+The Y-BOCS score is divided into Y-BOCS score for obsession and Y-BOCS score for compulsion in this dataset. Firstly, I want to see if there is a correlation between these two types of Y-BOCS scores (Figure\ \@ref(fig:score-correlation-plot)). Based on Figure\ \@ref(fig:score-correlation-plot), there is no correlation between these two types of Y-BOCS scores, so Y-BOCS score for obsession will not affect Y-BOCS score for compulsion, and the reverse is also true.
 
-Next, to see Y-BOCS scores across education levels, I divided the plot into two facets: one for Y-BOCS compulsion score and one for Y-BOCS obsession score. Four education levels are grouped on x-axis and y-axis represents scores. I chose the boxplot to present scores because it shows minimum, mean, and maximum scores on the plot (Figure\ \@ref(fig:score-plot)).
 ```{r score-plot, fig.cap="Y-BOCS score and education levels"}
 # reshape data into long format, gather the variables "Y-BOCS Score Obsessions" and "Y-BOCS Score Compulsions" into one single column named "Score_Value", and a new column named "Score_Type" is created to indicate the type of score.
 
@@ -289,6 +305,9 @@ data_long %>%
         plot.caption = element_text(hjust = 1, size = 5))
 
 ```
+
+Next, to see Y-BOCS scores across education levels, I divided the plot into two facets: one for Y-BOCS compulsion score and one for Y-BOCS obsession score. Four education levels are grouped on x-axis and y-axis represents scores. I chose the boxplot to present scores because it shows minimum, mean, and maximum scores on the plot (Figure\ \@ref(fig:score-plot)).
+
 Then, make a general statistics summary for each box in the boxplot.
 ```{r descriptive-analysis-score-plot}
 # Calculate summary statistics for each Score_Type and Education Level
@@ -326,6 +345,7 @@ summary(obsessions_anova)
 summary(compulsions_anova)
 
 ```
+
 For Y-BOCS obsession score, the p-value is $p$() = `r round(summary(obsessions_anova)[[1]]$P[1],3)`, indicating that there is no significant difference in Y-BOCS score across four education levels at the 0.05 significance level, leading to fail to reject the null hypothesis.
 
 For Y-BOCS compulsion score, the p-value is $p$() = `r round(summary(compulsions_anova)[[1]]$P[1],3)`, also no significant difference in Y-BOCS score across four education levels, and the null hypothesis is failed to be rejected.
@@ -336,12 +356,9 @@ In both cases, since the p-values are greater than 0.05, fail to reject the null
 [My GitHub](https://github.com/luchen0805/OCD)
 
 
-# **Data analysis**
-I used `r cite_r("r-references.bib")` for all our analyses.
-
-
 # **Discussion**
 
+This project investigated the association of education level with clinical diagnostic information like Y-BOCS score and anxiety disorder, and demographic information like family history of OCD for OCD patients. Main findings included 1. neither education level nor family history of OCD can be used as factors in predicting anxiety disorder. 2. there is no correlation between Y-BOCS compulsion score and Y-BOCS obsession score. 3. Y-BOCS score does not associate with education level. The previous two findings are consistent with findings from other studies: there is no correlation between OCD and anxiety disorder[@krebsReciprocalLinksAnxiety2020]; and subgroups of Y-BOCS scores are independent of each other[@rosario-camposDimensionalYaleBrown2006]. For the third finding, @perez-vigilAssociationObsessiveCompulsiveDisorder2018 found in their study that OCD symptoms decreased with increasing education level, which meant that Y-BOCS score also decreased, so there might be an association with education for Y-BOCS score. More studies should be done to further test this finding.
 
 \newpage
 
