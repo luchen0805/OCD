@@ -61,9 +61,11 @@ library(papaja)
 library(readr)
 library(dplyr)
 library(tidyr)
-library(ggplot2)
-library(devtools)
 library(car)
+
+require(ggplot2)
+require(devtools)
+require(car)
 
 devtools::install_github("crsh/citr")
 r_refs("r-references.bib")
@@ -131,7 +133,7 @@ write.csv(data, csv_file_path)
 # each column is either a character or numeric number
 # each row is a single observation for one patient
 # each cell is a single measurement
-# for research questions about the association of the prevalence of OCD with education level, family history of OCD, and previously diagnosed disorders, only the column "Education Level", "Family History of OCD", and "Previous Diagnoses" are needed, all the other columns are extraneous
+
 ```
 
 
@@ -169,7 +171,7 @@ To use education level and family history of OCD as two factors to predict anxie
 
 ### **With a family history of OCD**
 
-The diagnosis rate of anxiety disorder is based on each education level. Within an education level, the sum of the proportions of OCD patients diagnosed with anxiety disorder and those without diagnosis of anxiety disorder is one.
+The diagnosis rate of anxiety disorder is based on each education level. Within an education level, the sum of the proportions of OCD patients diagnosed with anxiety disorder and those without diagnosis of anxiety disorder is one. The proportions of anxiety diagnosis for each education level for either having or not having a family history of OCD are calculated. Table\ \@ref(tab:proportions-summary-table-one-anxiety-diagnosis-plot) is created to summarize the counts and proportions under the situation of having a family history of OCD.
 
 ```{r descriptive-analysis-one-anxiety-diagnosis-plot}
 # calculate proportions for the facet where Family.History.of.OCD == "Yes"
@@ -180,11 +182,10 @@ proportions <- data %>%
   summarize(Count = n(), .groups = "drop") %>%
   group_by(Education.Level) %>%
   mutate(Proportion = Count / sum(Count))
-proportions
 
 ```
 
-To be more formalized, Table\ \@ref(tab:proportions-summary-table-one-anxiety-diagnosis-plot) is created to summarize these counts and proportions. 
+
 ```{r proportions-summary-table-one-anxiety-diagnosis-plot, caption="Proportion summary table one"}
 proportions_table <- apa_table(proportions,
                                caption = "Proportions of Anxiety Diagnosis by Education Level and Family History of OCD",
@@ -200,7 +201,9 @@ Table\ \@ref(tab:proportions-summary-table-one-anxiety-diagnosis-plot) shows the
 To compare proportions for having diagnosed with anxiety disorders across education levels, 44.3% OCD patients from high school level are diagnosed with anxiety disorder; the proportions for some college level, college degree level, and graduate degree level are 48.7%, 48.1%, and 55.8% respectively. It is hard to make a conclusion about whether education level can predict the occurrence of anxiety disorder because although there's an increase trend of diagnosis proportion with the increasing education level, there's a decrease in the proportion for the college degree level. Further statistical analysis is needed.
 
 ### **Without a family history of OCD**
-Calculate the proportions.
+
+Table\ \@ref(tab:proportions-summary-table-two-anxiety-diagnosis-plot) is created to summarize the counts and proportions under the situation of not having a family history of OCD.
+
 ```{r descriptive-analysis-two-anxiety-diagnosis-plot}
 # calculate proportions for the facet where Family.History.of.OCD == "No"
 proportions2 <- data %>%
@@ -210,10 +213,11 @@ proportions2 <- data %>%
   summarize(Count2 = n(), .groups = "drop") %>%
   group_by(Education.Level) %>%
   mutate(Proportion2 = Count2 / sum(Count2))
-proportions2
+
 ```
 
-To be more formalized, Table\ \@ref(tab:proportions-summary-table-two-anxiety-diagnosis-plot) is created to summarize these counts and proportions.
+Table\ \@ref(tab:proportions-summary-table-two-anxiety-diagnosis-plot) shows the proportions of OCD patients with and without anxiety disorder across four education levels under the situation of not having a family history of OCD. For the education level of high school, there were 93 cases where anxiety disorder was not diagnosed, constituting approximately 48.9% of the total cases. Meanwhile, there were 97 cases where anxiety disorder was diagnosed, accounting for around 51.1% of the total cases. For individuals with some college education, there were 99 cases where anxiety disorder was not diagnosed, making up about 49.3% of the total cases. Additionally, there were 102 cases where anxiety disorder was diagnosed, representing approximately 50.7% of the total cases. Among individuals with a college degree, there were 97 cases where anxiety disorder was not diagnosed, accounting for approximately 54.2% of the total cases. Conversely, there were 82 cases where anxiety disorder was diagnosed, accounting for approximately 45.8% of the total cases. For individuals with a graduate degree, there were 76 cases where anxiety disorder was not diagnosed, representing around 44.7% of the total cases. On the other hand, there were 94 cases where anxiety disorder was diagnosed, making up about 55.3% of the total cases.
+
 ```{r proportions-summary-table-two-anxiety-diagnosis-plot, caption="Proportion summary table two"}
 proportions2_table <- apa_table(proportions2,
                                 caption = "Proportions of Anxiety Diagnosis by Education Level and Family History of OCD",
@@ -223,8 +227,6 @@ proportions2_table <- apa_table(proportions2,
                                 table.number = 2)
 proportions2_table
 ```
-
-Table\ \@ref(tab:proportions-summary-table-two-anxiety-diagnosis-plot) shows the proportions of OCD patients with and without anxiety disorder across four education levels under the situation of not having a family history of OCD. For the education level of high school, there were 93 cases where anxiety disorder was not diagnosed, constituting approximately 48.9% of the total cases. Meanwhile, there were 97 cases where anxiety disorder was diagnosed, accounting for around 51.1% of the total cases. For individuals with some college education, there were 99 cases where anxiety disorder was not diagnosed, making up about 49.3% of the total cases. Additionally, there were 102 cases where anxiety disorder was diagnosed, representing approximately 50.7% of the total cases. Among individuals with a college degree, there were 97 cases where anxiety disorder was not diagnosed, accounting for approximately 54.2% of the total cases. Conversely, there were 82 cases where anxiety disorder was diagnosed, accounting for approximately 45.8% of the total cases. For individuals with a graduate degree, there were 76 cases where anxiety disorder was not diagnosed, representing around 44.7% of the total cases. On the other hand, there were 94 cases where anxiety disorder was diagnosed, making up about 55.3% of the total cases.
 
 To compare proportions for having diagnosed with anxiety disorders across education levels, 51.1% OCD patients from high school level are diagnosed with anxiety disorder; the proportions for some college level, college degree level, and graduate degree level are 50.7%, 45.8%, and 55.3% respectively. Conclusion about education level predicts the occurrence of anxiety disorder is not supported in this case because with an increase in education level, the proportion first decreases then increases. Further statistical analysis is needed.
 
@@ -253,12 +255,13 @@ Anova(logistic_model)
 ```
 
 
-The coefficient for having a family history of OCD is -0.05988, indicating that it is less likely for OCD patients who have a family history of OCD to have anxiety disorder. However, this coefficient is not statistically significant as p-value is larger than 0.5. Similarly, as the p-values are larger than 0.5, the coefficients for high school level, some college level, and college degree level are all not statistically significant. So, these education levels and the family history of OCD are not useful predictors of anxiety disorder. The only p-value that is smaller than 0.05 is for graduate degree level. So, having a graduate degree appears to be a significant predictor of higher odds of anxiety disorder compared to all other education levels. At the same time, because larger coefficient indicates a stronger effect on the outcome variable, the coefficient for graduate degree level of 0.31656 is relatively large compared to other coefficients. So, it has a stronger effect on predicting anxiety disorder compared to other education levels or family history of OCD. However, the overall fit of the model is not good, as indicated by the high null and residual deviance values, and the high AIC value. Therefore, it can be concluded that education level and family history of OCD are not able to be used to predict the occurrence of anxiety disorder.
+The coefficient for having a family history of OCD is -0.0599, indicating that it is less likely for OCD patients who have a family history of OCD to have anxiety disorder. However, this coefficient is not statistically significant as p-value is larger than 0.5. Similarly, as the p-values are larger than 0.5, the coefficients for high school level, some college level, and college degree level are all not statistically significant. So, these education levels and the family history of OCD are not useful predictors of anxiety disorder. The only p-value that is smaller than 0.05 is for graduate degree level. So, having a graduate degree appears to be a significant predictor of higher odds of anxiety disorder compared to all other education levels. At the same time, because larger coefficient indicates a stronger effect on the outcome variable, the coefficient for graduate degree level of 0.31656 is relatively large compared to other coefficients. So, it has a stronger effect on predicting anxiety disorder compared to other education levels or family history of OCD. However, the overall fit of the model is not good, as indicated by the high null and residual deviance values, and the high AIC value. Therefore, it can be concluded that education level and family history of OCD are not able to be used to predict the occurrence of anxiety disorder.
 
 The ANOVA results also showed that both education level and family history of OCD are statistically insignificant for predicting anxiety disorder.
 
 ## **Obsession and compulsion Y-BOCS scores for different education levels**
 
+The Y-BOCS score is divided into Y-BOCS score for obsession and Y-BOCS score for compulsion in this dataset. Firstly, I want to see if there is a correlation between these two types of Y-BOCS scores (Figure\ \@ref(fig:score-correlation-plot)). Based on Figure\ \@ref(fig:score-correlation-plot), there is no correlation between these two types of Y-BOCS scores, so Y-BOCS score for obsession will not affect Y-BOCS score for compulsion, and the reverse is also true.
 
 ```{r score-correlation-plot, fig.cap="Correlation between obsessions Y-BOCS-Score and compulsions Y-BOCS-Score"}
 data %>% 
@@ -276,7 +279,6 @@ data %>%
         plot.margin = unit(c(1, 1, 1, 1), "cm"))
 ```
 
-The Y-BOCS score is divided into Y-BOCS score for obsession and Y-BOCS score for compulsion in this dataset. Firstly, I want to see if there is a correlation between these two types of Y-BOCS scores (Figure\ \@ref(fig:score-correlation-plot)). Based on Figure\ \@ref(fig:score-correlation-plot), there is no correlation between these two types of Y-BOCS scores, so Y-BOCS score for obsession will not affect Y-BOCS score for compulsion, and the reverse is also true.
 
 ```{r score-plot, fig.cap="Y-BOCS score and education levels"}
 # reshape data into long format, gather the variables "Y-BOCS Score Obsessions" and "Y-BOCS Score Compulsions" into one single column named "Score_Value", and a new column named "Score_Type" is created to indicate the type of score.
@@ -306,9 +308,9 @@ data_long %>%
 
 ```
 
-Next, to see Y-BOCS scores across education levels, I divided the plot into two facets: one for Y-BOCS compulsion score and one for Y-BOCS obsession score. Four education levels are grouped on x-axis and y-axis represents scores. I chose the boxplot to present scores because it shows minimum, mean, and maximum scores on the plot (Figure\ \@ref(fig:score-plot)).
+Next, to see Y-BOCS scores across education levels, I divided the plot into two facets: one for Y-BOCS compulsion score and one for Y-BOCS obsession score. Four education levels are grouped on x-axis and y-axis represents scores. I chose the boxplot to present scores because it shows minimum, mean, and maximum scores (Figure\ \@ref(fig:score-plot)).
 
-Then, make a general statistics summary for each box in the boxplot.
+Then, a general statistics summary is made for each box in the boxplot.
 ```{r descriptive-analysis-score-plot}
 # Calculate summary statistics for each Score_Type and Education Level
 summary_stats <- data_long %>%
