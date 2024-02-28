@@ -29,5 +29,7 @@ Chatacteristics of OCD patients are complicated. Their demographic information i
    -- plot1 for anxiety-diagnosis-plot-1.png  
    -- plot2 for correlation-plot-1.png
    -- plot3 for score-plot-1.png
+-- reference
+   -- r-references.bib
 -- .gitignore  
 -- OCD.Rproj  
