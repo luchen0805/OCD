@@ -1,4 +1,4 @@
-# OCD
+# OCD Patients Information Analysis
 
 # **Brief description of the dataset**
 
@@ -23,11 +23,11 @@ Chatacteristics of OCD patients are complicated. Their demographic information i
 -- data  
    -- ocd_patient_dataset.csv  
 -- docs  
-   -- README.md  
+   -- README.md
+   -- OCD patients information analysis.Rmd  
 -- plots  
-   -- plot1 for OCD patients information analysis.png  
-   -- plot2 for OCD patients information analysis.png  
--- results   
-   -- OCD patients information analysis results.txt  
+   -- plot1 for anxiety-diagnosis-plot-1.png  
+   -- plot2 for correlation-plot-1.png
+   -- plot3 for score-plot-1.png
 -- .gitignore  
 -- OCD.Rproj  
