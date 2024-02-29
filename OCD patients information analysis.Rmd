@@ -310,7 +310,7 @@ data_long %>%
 
 Next, to see Y-BOCS scores across education levels, I divided the plot into two facets: one for Y-BOCS compulsion score and one for Y-BOCS obsession score. Four education levels are grouped on x-axis and y-axis represents scores. I chose the boxplot to present scores because it shows minimum, mean, and maximum scores (Figure\ \@ref(fig:score-plot)).
 
-Then, a general statistics summary is made for each box in the boxplot.
+Then, I made a general statistics summary for each box in the boxplot to show mean score, median score, minimum score, and maximum score values.
 ```{r descriptive-analysis-score-plot}
 # Calculate summary statistics for each Score_Type and Education Level
 summary_stats <- data_long %>%
