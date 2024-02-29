@@ -15,7 +15,7 @@ Chatacteristics of OCD patients are complicated. Their demographic information i
 1. Can education level and family history of OCD predict the likelihood of having anxiety disorder?
 2. Is there a pattern of Y-BOCS score distribution in different education levels?
 
-# **Hypothetical file tree**
+# **File tree**
 
 ```{r}  
 -- R  
