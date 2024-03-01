@@ -56,16 +56,19 @@ output            : papaja::apa6_pdf
 
 ```{r setup, include = FALSE}
 
+options(repos = c(CRAN = "https://cran.rstudio.com/"))
+
 # load necessary packages
+library(Require)
 library(papaja)
 library(readr)
 library(dplyr)
 library(tidyr)
 library(car)
 
-require(ggplot2)
-require(devtools)
-require(car)
+Require("ggplot2")
+Require("devtools")
+Require("car")
 
 devtools::install_github("crsh/citr")
 r_refs("r-references.bib")
@@ -95,8 +98,7 @@ In this project, I explored the performance and some correlations of diagnostic 
 
 # **Methods**
 
-I extracted this dataset about OCD patients' demographic information and clinical diagnostic data from kaggle.com. The dataset contains information like Patient ID, Age, Gender, Education Level, Previous Diagnoses, Family History of OCD, Y-BOCS Score for Obsessions, Y-BOCS Score for Compulsions, Depression Diagnosis, Anxiety Diagnosis, etc. for 1500 OCD patients. I used R for all the plotting and data analysis.
-
+I extracted this dataset about 1500 OCD patients' demographic information and clinical diagnostic data from kaggle.com. The dataset contains information like Patient ID, Age, Gender, Education Level, Previous Diagnoses, Family History of OCD, Y-BOCS Score for Obsessions, Y-BOCS Score for Compulsions, Depression Diagnosis, and Anxiety Diagnosis. I used R [@R-base] for all the plotting and data analysis. All the packages used are listed in the footnote^[`r cite_r("r-references.bib")``].
 
 
 # **Data Analysis**
@@ -196,13 +198,15 @@ proportions_table <- apa_table(proportions,
 proportions_table
 ```
 
-Table\ \@ref(tab:proportions-summary-table-one-anxiety-diagnosis-plot) shows the proportions of OCD patients with and without anxiety disorder across four education levels under the situation of having a family history of OCD. For the education level of high school, there were 97 cases where anxiety disorder was not diagnosed, constituting approximately 55.7% of the total cases. Meanwhile, there were 77 cases where anxiety disorder was diagnosed, accounting for around 44.3% of the total cases. For individuals with some college education, there were 99 cases where anxiety disorder was not diagnosed, making up about 51.3% of the total cases. Additionally, there were 94 cases where anxiety disorder was diagnosed, representing approximately 48.7% of the total cases. Among individuals with a college degree, there were 97 cases where anxiety disorder was not diagnosed, accounting for approximately 51.9% of the total cases. Conversely, there were 90 cases where anxiety disorder was diagnosed, accounting for approximately 48.1% of the total cases. For individuals with a graduate degree, there were 91 cases where anxiety disorder was not diagnosed, representing around 44.2% of the total cases. On the other hand, there were 115 cases where anxiety disorder was diagnosed, making up about 55.8% of the total cases.
+Table\ \@ref(tab:proportions-summary-table-one-anxiety-diagnosis-plot) shows the proportions of OCD patients with and without anxiety disorder across four education levels under the situation of having a family history of OCD. To compare proportions for having diagnosed with anxiety disorders within one education level, for the education level of high school, there were more people not diagnosed with anxiety disorder than having diagnosed with anxiety disorder. For the some college level, more people were not diagnosed with anxiety. For college degree level, more people were not diagnosed with anxiety disorder. And for graduate degree level, more people were diagnosed with anxiety disorder. 
 
-To compare proportions for having diagnosed with anxiety disorders across education levels, 44.3% OCD patients from high school level are diagnosed with anxiety disorder; the proportions for some college level, college degree level, and graduate degree level are 48.7%, 48.1%, and 55.8% respectively. It is hard to make a conclusion about whether education level can predict the occurrence of anxiety disorder because although there's an increase trend of diagnosis proportion with the increasing education level, there's a decrease in the proportion for the college degree level. Further statistical analysis is needed.
+To compare proportions for having diagnosed with anxiety disorders across education levels, OCD patients from high school level have the least proportion of patients diagnosed with anxiety disorder; patients from graduate degree level have the largest proportion of patients diagnosed with anxiety disorder. However, some college level patients have larger proportion of patients diagnosed with anxiety than college degree patients. And because the total number of patients at each education level are different, it is hard to make a conclusion about whether education level can predict the occurrence of anxiety disorder because although there's an increase trend of diagnosis proportion with the increasing education level, there's a decrease in the proportion for the college degree level. Further statistical analysis is needed.
 
 ### **Without a family history of OCD**
 
 Table\ \@ref(tab:proportions-summary-table-two-anxiety-diagnosis-plot) is created to summarize the counts and proportions under the situation of not having a family history of OCD.
+
+Table\ \@ref(tab:proportions-summary-table-two-anxiety-diagnosis-plot) shows the proportions of OCD patients with and without anxiety disorder across four education levels under the situation of not having a family history of OCD. To compare proportions for having diagnosed with anxiety disorders within one education level, for the education level of high school, there were more people diagnosed with anxiety disorder than not diagnosed with anxiety disorder. For the some college level, more people were diagnosed with anxiety disorder. For the college degree level, more people were not diagnosed with anxiety disorder. And for graduate degree level, more people were diagnosed with anxiety disorder.
 
 ```{r descriptive-analysis-two-anxiety-diagnosis-plot}
 # calculate proportions for the facet where Family.History.of.OCD == "No"
@@ -216,7 +220,7 @@ proportions2 <- data %>%
 
 ```
 
-Table\ \@ref(tab:proportions-summary-table-two-anxiety-diagnosis-plot) shows the proportions of OCD patients with and without anxiety disorder across four education levels under the situation of not having a family history of OCD. For the education level of high school, there were 93 cases where anxiety disorder was not diagnosed, constituting approximately 48.9% of the total cases. Meanwhile, there were 97 cases where anxiety disorder was diagnosed, accounting for around 51.1% of the total cases. For individuals with some college education, there were 99 cases where anxiety disorder was not diagnosed, making up about 49.3% of the total cases. Additionally, there were 102 cases where anxiety disorder was diagnosed, representing approximately 50.7% of the total cases. Among individuals with a college degree, there were 97 cases where anxiety disorder was not diagnosed, accounting for approximately 54.2% of the total cases. Conversely, there were 82 cases where anxiety disorder was diagnosed, accounting for approximately 45.8% of the total cases. For individuals with a graduate degree, there were 76 cases where anxiety disorder was not diagnosed, representing around 44.7% of the total cases. On the other hand, there were 94 cases where anxiety disorder was diagnosed, making up about 55.3% of the total cases.
+
 
 ```{r proportions-summary-table-two-anxiety-diagnosis-plot, caption="Proportion summary table two"}
 proportions2_table <- apa_table(proportions2,
@@ -228,9 +232,10 @@ proportions2_table <- apa_table(proportions2,
 proportions2_table
 ```
 
-To compare proportions for having diagnosed with anxiety disorders across education levels, 51.1% OCD patients from high school level are diagnosed with anxiety disorder; the proportions for some college level, college degree level, and graduate degree level are 50.7%, 45.8%, and 55.3% respectively. Conclusion about education level predicts the occurrence of anxiety disorder is not supported in this case because with an increase in education level, the proportion first decreases then increases. Further statistical analysis is needed.
 
-Comparing the proportion for the same education level for having and not having a family history of OCD, within high school level, 44.3% OCD patients with a family history of OCD are also diagnosed with anxiety disorder; 51.1% OCD patients without a family history of OCD are diagnosed with anxiety disorder. Within some college level, 48.7% diagnosed with anxiety disorder have a family history of OCD and 50.7% do not have a family history of OCD. Within college degree level, 48.1% diagnosed with anxiety disorder have a family history of OCD and 45.8% do not have a family history of OCD. Within graduate degree level, 55.8% diagnosed with anxiety disorder have a family history of OCD and 55.3% do not have a family history of OCD. So, as proportions are so close to each other within one education level, the conclusion of family history of OCD predicts anxiety disorder is not supported. Further statistical analysis is needed.
+To compare proportions for having diagnosed with anxiety disorders across education levels, graduate degree patients have the largest proportion of people diagnosed with anxiety disorder and college degree level patients have the smallest proportion of people diagnosed with anxiety disorder. In between, high school level patients have larger proportion of people diagnosed with anxiety disorder than some college level patients. Still, the total number of patients at each education level were not the same. Conclusion about education level predicts the occurrence of anxiety disorder is not supported in this case because with an increase in education level, the proportion first decreases then increases. Further statistical analysis is needed.
+
+Comparing the proportion for the same education level for having and not having a family history of OCD, within high school level, more OCD patients without a family history of OCD are diagnosed with anxiety disorder than those with a family history of OCD. Within some college level, more OCD patients without a family history of OCD are diagnosed with anxiety disorder than those with a family history of OCD. Within college degree level, more OCD patients with a family history of OCD are diagnosed with anxiety disorder than those without a family history of OCD. Within graduate degree level, more OCD patients with a family history of OCD are diagnosed with anxiety disorder than those without a family history of OCD. So, as the patterns are not consistent for each education level, the conclusion of family history of OCD predicts anxiety disorder is not supported. Further statistical analysis is needed.
 
 ### **Test analysis**
 
@@ -255,7 +260,7 @@ Anova(logistic_model)
 ```
 
 
-The coefficient for having a family history of OCD is -0.0599, indicating that it is less likely for OCD patients who have a family history of OCD to have anxiety disorder. However, this coefficient is not statistically significant as p-value is larger than 0.5. Similarly, as the p-values are larger than 0.5, the coefficients for high school level, some college level, and college degree level are all not statistically significant. So, these education levels and the family history of OCD are not useful predictors of anxiety disorder. The only p-value that is smaller than 0.05 is for graduate degree level. So, having a graduate degree appears to be a significant predictor of higher odds of anxiety disorder compared to all other education levels. At the same time, because larger coefficient indicates a stronger effect on the outcome variable, the coefficient for graduate degree level of 0.31656 is relatively large compared to other coefficients. So, it has a stronger effect on predicting anxiety disorder compared to other education levels or family history of OCD. However, the overall fit of the model is not good, as indicated by the high null and residual deviance values, and the high AIC value. Therefore, it can be concluded that education level and family history of OCD are not able to be used to predict the occurrence of anxiety disorder.
+The coefficient for having a family history of OCD is negative, indicating that it is less likely for OCD patients who have a family history of OCD to have anxiety disorder. However, this coefficient is not statistically significant as p-value is larger than 0.5. Similarly, as the p-values are larger than 0.5, the coefficients for high school level, some college level, and college degree level are all not statistically significant. So, these education levels and the family history of OCD are not useful predictors of anxiety disorder. The only p-value that is smaller than 0.05 is for graduate degree level. So, having a graduate degree appears to be a significant predictor of higher odds of anxiety disorder compared to all other education levels. At the same time, because larger coefficient indicates a stronger effect on the outcome variable, the coefficient for graduate degree level of 0.31656 is relatively large compared to other coefficients. So, it has a stronger effect on predicting anxiety disorder compared to other education levels or family history of OCD. However, the overall fit of the model is not good, as indicated by the high null and residual deviance values, and the high AIC value. Therefore, it can be concluded that education level and family history of OCD are not able to be used to predict the occurrence of anxiety disorder.
 
 The ANOVA results also showed that both education level and family history of OCD are statistically insignificant for predicting anxiety disorder.
 

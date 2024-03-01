@@ -1,12 +1,16 @@
+options(repos = c(CRAN = "https://cran.rstudio.com/"))
+
 # load necessary packages
+library(Require)
 library(papaja)
 library(readr)
 library(dplyr)
 library(tidyr)
 library(car)
-require(ggplot2)
-require(devtools)
-require(car)
+
+Require("ggplot2")
+Require("devtools")
+Require("car")
 
 # read in the dataset
 data <- read.csv("ocd_patient_dataset.csv")
