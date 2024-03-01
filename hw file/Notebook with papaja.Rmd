@@ -1,16 +1,14 @@
 ---
-title             : "Prevalence of OCD in different patient groups"
-short title       : "OCD patients information analysis"
+title             : "OCD patients information analysis"
 
 author: 
   - name          : "Luchen Yu"
-    affiliation   : "University of Chicago"
+    affiliation   : "1"
     email         : "ylc23@uchicago.edu"
 
-  <!-- https://tinyurl.com/ybremelq -->
+affiliation:
+  - id: "1"
   
-keywords          : "keywords"
-wordcount         : "X"
 
 bibliography      : "r-references.bib"
 
@@ -33,18 +31,6 @@ library("papaja")
 r_refs("r-references.bib")
 ```
 
-```{r caption_chunk, fig.align='center', fig.cap='Family history of OCD and education levels'}
-```
-
-```{r image_chunk, fig.cap="login_failed.jpg"}
-library(jpeg)
-# Read in the image file
-image <- readJPEG("/Users/yuluchen/Desktop/login_failed.jpg")
-
-# Display the image
-grid::grid.raster(image)
-
-```
 
 
 ```{r helloworld, include = FALSE}
@@ -91,29 +77,10 @@ write.csv(data, csv_file_path)
 # for research questions about the association of the prevalence of OCD with education level, family history of OCD, and previously diagnosed disorders, only the column "Education Level", "Family History of OCD", and "Previous Diagnoses" are needed, all the other columns are extraneous
 ```
 
-```{r intermediate OCDdata}
-# create an intermediate dataset
-# select specific columns that are related to my research questions
-library(dplyr)
-select(OCD.data, Education.Level, Family.History.of.OCD, Previous.Diagnoses)
-
-# keep rows based on certain column values
-# High school as education level, has family history of OCD, and does not be previously diagnosed
-filter(OCD.data, Education.Level == "High School" & Family.History.of.OCD == "Yes" & Previous.Diagnoses == "None")
-
-# combine the two
-# intermediate dataset for High school educated patients with family history of OCD and does not be diagnosed with other disorders before
-intermediate.OCD.data <- OCD.data %>%
-  select(Education.Level, Family.History.of.OCD, Previous.Diagnoses) %>%
-  filter(Education.Level == "High School" & Family.History.of.OCD == "Yes" & Previous.Diagnoses == "None")
-
-# write into csv filetype
-csv_file_path <- "intermediate_ocd_data.csv"
-write.csv(intermediate.OCD.data, csv_file_path)
-```
 
 ```{r plot for correlation of family history of OCD and education levels}
 # To see how the presence or absence of a family history of OCD correlates with the frequency of OCD diagnoses across education levels, I plan to create a bar graph. The x-axis stands for the education levels. The y-axis represents the frequency or count of individuals diagnosed with OCD at each education level. The filling represents whether individuals have a family history of OCD.
+library(ggplot2)
 
 data %>%
   ggplot(aes(x = Education.Level, fill = Family.History.of.OCD)) +
@@ -153,10 +120,29 @@ print(chi_square_test)
 # With a p-value of 0.2385, which is greater than the typical significance level of 0.05, fail to reject the null hypothesis. This suggests that there is not enough evidence to conclude that there is a significant association between family history of OCD and education level. So, there is no significant association between family history of OCD and education level.
 ```
 
-
+```{r plot_chunk, fig.cap='Family history of OCD and education levels'}
+ggplot(data, aes(x = Education.Level, fill = Family.History.of.OCD)) +
+  geom_bar(position = "dodge", color = "black") +
+  scale_fill_manual(values = c("Yes" = "purple", "No" = "pink")) + 
+  labs(
+    x = "Education Level",
+    y = "Frequency",
+    fill = "Family History of OCD",
+    title = "Frequency of OCD patients across education levels",
+    subtitle = "Association with family history of OCD",
+    caption = "Family history of OCD and education levels"
+  ) +
+  theme_apa() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.text = element_text(size = 10),
+        plot.caption = element_text(hjust = 1, size = 5),
+        legend.title = element_text(size = 10),
+        legend.text = element_text(size = 10))
+```
 
 ```{r plot for correlation of Y-BOCS Score and  education levels}
 # reshape data into long format, gather the variables "Y-BOCS Score Obsessions" and "Y-BOCS Score Compulsions" into one single column named "Score_Value", and a new column named "Score_Type" is created to indicate the type of score.
+library(tidyr)
 
 # convert data into long format
 data_long <- data %>%
@@ -207,10 +193,13 @@ obsessions_anova <- aov(Score_Value ~ Education.Level, data = data_long[data_lon
 compulsions_anova <- aov(Score_Value ~ Education.Level, data = data_long[data_long$Score_Type == "Y.BOCS.Score..Compulsions.", ])
 
 # Summarize ANOVA results
-summary(obsessions_anova)
-summary(compulsions_anova)
+obsessions_anova_summary <- summary(obsessions_anova)
+compulsions_anova_summary <- summary(compulsions_anova)
 
-# Analyze ANOVA rsults
+library(agricolae)
+TukeyHSD(obsessions_anova)
+
+# Analyze ANOVA results
 # Obsession
 # The p-value associated with the F value is 0.348, which is above the conventional significance level of 0.05. This indicates that there is insufficient evidence to reject the null hypothesis, suggesting that there are no statistically significant differences in Y.BOCS.Score across education levels within Obsessions.
 # Compulsion
@@ -219,21 +208,37 @@ summary(compulsions_anova)
 
 ```
 
+```{r plot_chunk2, fig.cap='Y-BOCS scre and education levels'}
+data_long %>%
+  ggplot(aes(x = Education.Level, y = Score_Value, fill = Education.Level)) +
+  geom_boxplot() +
+  facet_wrap(~ Score_Type, scales = "free_y", labeller = labeller(Score_Type = c("Y.BOCS.Score..Compulsions." = "Y-BOCS Score Compulsions", "Y.BOCS.Score..Obsessions." = "Y-BOCS Score Obsessions"))) +
+  labs(
+    x = "Education Level",
+    y = "Y-BOCS Score",
+    title = "Y-BOCS scores for different education levels",
+    subtitle = "Subdivided into obsession score and compulsion score",
+    caption = "Y-BOCS score and education levels"
+  ) +
+  theme_apa() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.text = element_text(size = 10),
+        plot.caption = element_text(hjust = 1, size = 5))
 
-
-```{r plot to visualize the distribution of two types of scores within each education level group based on the previous boxplot}
-# Convert data into long format
-data_long <- data %>%
-  pivot_longer(cols = c(Y.BOCS.Score..Obsessions., Y.BOCS.Score..Compulsions.), names_to = "Score_Type", values_to = "Score_Value")
-
-# Create density plots
-ggplot(data_long, aes(x = Score_Value, fill = Score_Type)) +
-  geom_density(alpha = 0.5) +
-  facet_wrap(~ Education.Level, nrow = 2) +
-  labs(x = "Y-BOCS Score", y = "Density", fill = "Score Type", title = "Density Plot of Y-BOCS Scores by Education Level") +
-  theme_minimal()
 ```
 
+
+```{r table for frequency across education levels}
+# load the package
+
+data %>%
+  group_by(Education.Level) %>%
+  summarize(Frequency = n()) %>%
+  apa_table(caption = "Number across education levels",
+               col.names = c("Education Level", "Number of OCD Patients"),
+               align = c("l", "l"))
+
+```
 
 
 ```{r plot for previous diagnoses count over different educational levels}
@@ -246,12 +251,34 @@ ggplot(data, aes(x = Education.Level, fill = Previous.Diagnoses)) +
     x = "Education Level",
     y = "Frequency of OCD",
     fill = "Previous Diagnoses",
-    title = "Frequency of OCD by Education Level and Previous Diagnoses"
+    title = "Frequency of OCD by Education Level and Previous Diagnoses",
+    caption = "Previous diagnoses and education levels"
   ) +
-  theme_minimal()
+  theme_apa() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.text = element_text(size = 10),
+        plot.caption = element_text(hjust = 1, size = 5))
 
 # compare the count for each education level for each previously diagnosed disease. carry out ANOVA test for each diagnosed disease.
 ```
+
+```{r plot_chunk3, fig.cap='Previous diagnoses and education levels'}
+diagnoses_count <- table(data$Previous.Diagnoses)
+ggplot(data, aes(x = Education.Level, fill = Previous.Diagnoses)) +
+  geom_bar() +
+  labs(
+    x = "Education Level",
+    y = "Frequency of OCD",
+    fill = "Previous Diagnoses",
+    title = "Frequency of OCD by Education Level and Previous Diagnoses",
+    caption = "Previous diagnoses and education levels"
+  ) +
+  theme_apa() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.text = element_text(size = 10),
+        plot.caption = element_text(hjust = 1, size = 5))
+```
+
 
 # calculate frequency of each education level
 education_table <- table(data$Education.Level)

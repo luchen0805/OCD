@@ -19,7 +19,7 @@ OCD.data <- read.csv("ocd_patient_dataset.csv")
 # examine the dataset
 str(OCD.data)
 
-# It includes many variable columns that I don't need and I don't want Patient.ID to represent patients, I want ordered patient numbers
+# It includes many variable columns that I don't need, and I don't want Patient.ID to represent patients, I want ordered patient numbers
 
 # select specific variable columns that are related to my research questions
 library(dplyr)
