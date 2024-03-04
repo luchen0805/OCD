@@ -33,7 +33,7 @@ mask              : no
 figurelist        : no
 tablelist         : no
 footnotelist      : no
-numbersections    : yes
+numbersections    : no
 
 header-includes:
   - |
@@ -64,7 +64,6 @@ library(papaja)
 library(readr)
 library(dplyr)
 library(tidyr)
-library(car)
 
 Require("ggplot2")
 Require("devtools")
@@ -93,7 +92,7 @@ The diagnosis and assessment of OCD comes from the Yale–Brown Obsessive-Compul
 
 In terms of school students with OCD, approximately 3% of children in the United States have been diagnosed with obsessive-compulsive disorder. But in fact, it can be difficult to identify students with OCD because symptoms appear similar to those of some other mental disorders or illnesses [@OCDSchoolAnxietya]. Research shows that children with OCD are more likely to have poor grades in school or to drop out of school prematurely [@perez-vigilAssociationObsessiveCompulsiveDisorder2018]. And children with OCD do significantly worse in mathematics [@negreirosObsessiveCompulsiveDisorderOCD2023]. As far as education level is concerned, research has found that OCD symptoms are worst before the end of high school, but will improve significantly in college, so a reasonable speculation is that as education level increases, the symptoms of obsessive-compulsive disorder will decrease [@perez-vigilAssociationObsessiveCompulsiveDisorder2018]. At the same time, the results of a longitudinal twin experiment showed that obsessive-compulsive symptoms (OCS) aggravated anxiety sensitivity, and conversely, anxiety sensitivity also aggravated OCS. However, no direct relationship has been found between OCD and anxiety disorder [@krebsReciprocalLinksAnxiety2020].
 
-In this project, I explored the performance and some correlations of diagnostic information at different education levels based on the clinical diagnosis and other basic information of patients with OCD. The research questions include: can education level and family history of OCD predict the likelihood of having anxiety disorder? And, whether Y-BOCS score has some trends in different education levels.
+In this project, I explored the performance and some correlations of diagnostic information at different education levels based on the clinical diagnosis and other basic information of patients with OCD. The research questions include: (1) can education level and family history of OCD predict the likelihood of having anxiety disorder? (2) whether Y-BOCS score has some trends in different education levels.
 
 
 # **Methods**
@@ -271,7 +270,7 @@ The Y-BOCS score is divided into Y-BOCS score for obsession and Y-BOCS score for
 ```{r score-correlation-plot, fig.cap="Correlation between obsessions Y-BOCS-Score and compulsions Y-BOCS-Score"}
 data %>% 
   ggplot(aes(x = Y.BOCS.Score..Obsessions., y = Y.BOCS.Score..Compulsions.)) +
-  geom_jitter() +
+  geom_jitter(alpha = 0.6) +
   geom_smooth() +
   labs(
     x = "Y-BOCS Score for Obsessions",
@@ -358,9 +357,6 @@ For Y-BOCS obsession score, the p-value is $p$() = `r round(summary(obsessions_a
 For Y-BOCS compulsion score, the p-value is $p$() = `r round(summary(compulsions_anova)[[1]]$P[1],3)`, also no significant difference in Y-BOCS score across four education levels, and the null hypothesis is failed to be rejected.
 
 In both cases, since the p-values are greater than 0.05, fail to reject the null hypothesis. This suggests that there are no statistically significant differences in Y.BOCS.Score across education levels within Obsessions or Compulsions.
-
-<!-- Linked URL -->
-[My GitHub](https://github.com/luchen0805/OCD)
 
 
 # **Discussion**
