@@ -100,7 +100,7 @@ In this project, I explored the performance and some correlations of diagnostic 
 I extracted this dataset about 1500 OCD patients' demographic information and clinical diagnostic data from kaggle.com. The dataset contains information like Patient ID, Age, Gender, Education Level, Previous Diagnoses, Family History of OCD, Y-BOCS Score for Obsessions, Y-BOCS Score for Compulsions, Depression Diagnosis, and Anxiety Diagnosis. I used R [@R-base] for all the plotting and data analysis. All the packages used are listed in the footnote^[`r cite_r("r-references.bib")``].
 
 
-# **Data Analysis**
+# **Results**
 
 
 ```{r data-prep}
